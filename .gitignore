@@ -1,24 +1,38 @@
-# Logs
-logs
+# Node.js dependencies
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+
+# Vite & build files
+.vite/
+.vitepress/cache/
+.vite-inspect/
 *.log
+pnpm-lock.yaml
+yarn.lock
+package-lock.json
+
+# Editor & System Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# TypeScript cache & build artifacts
+*.tsbuildinfo
+
+# MacOS system files
+._*
+
+# JetBrains IDE
+/.idea/
+/*.iml
+
+# Local development overrides
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
