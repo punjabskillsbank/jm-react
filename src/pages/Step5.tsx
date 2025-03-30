@@ -22,64 +22,62 @@ const Step5 = () => {
   };
 
   return (
-    <div style={{ maxWidth: "500px", margin: "auto", textAlign: "center", padding: "20px" }}>
-      <p>2/3</p>
-      <h2>Got it. What's your biggest goal for freelancing?</h2>
+    <div className="max-w-4xl mx-auto center p-5 my-7">
+      <p className="my-7">2/3</p>
+      <p className="text-xl font-bold">Got it. What's your biggest goal for freelancing?</p>
       <p>
         Different people come to Upwork for various reasons. We want to highlight the opportunities 
         that fit your goals best while still showing you all the possibilities.
       </p>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "20px" }}>
-        <button
-          style={{
-            padding: "10px",
-            border: `2px solid ${freelanceGoal === "main_income" ? "black" : "lightgray"}`,
-            cursor: "pointer",
-          }}
-          onClick={() => setFreelanceGoal("main_income")}
-        >
-          To earn my main income
-        </button>
-        <button
-          style={{
-            padding: "10px",
-            border: `2px solid ${freelanceGoal === "side_income" ? "black" : "lightgray"}`,
-            cursor: "pointer",
-          }}
-          onClick={() => setFreelanceGoal("side_income")}
-        >
-          To make money on the side
-        </button>
-        <button
-          style={{
-            padding: "10px",
-            border: `2px solid ${freelanceGoal === "experience" ? "black" : "lightgray"}`,
-            cursor: "pointer",
-          }}
-          onClick={() => setFreelanceGoal("experience")}
-        >
-          To get experience, for a full-time job
-        </button>
-        <button
-          style={{
-            padding: "10px",
-            border: `2px solid ${freelanceGoal === "no_goal" ? "black" : "lightgray"}`,
-            cursor: "pointer",
-          }}
-          onClick={() => setFreelanceGoal("no_goal")}
-        >
-          I don’t have a goal in mind yet
-        </button>
-      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-5 w-full">
+  <button
+    className={`px-4 py-2 border-2 rounded-2xl ${
+      freelanceGoal === "main_income" ? "border-black" : "border-gray-400"
+    } cursor-pointer`}
+    onClick={() => setFreelanceGoal("main_income")}
+  >
+    To earn my main income
+  </button>
+  <button
+    className={`px-4 py-2 border-2 rounded-2xl ${
+      freelanceGoal === "side_income" ? "border-black" : "border-gray-400"
+    } cursor-pointer`}
+    onClick={() => setFreelanceGoal("side_income")}
+  >
+    To make money on the side
+  </button>
+  <button
+    className={`px-4 py-2 border-2 rounded-2xl ${
+      freelanceGoal === "experience" ? "border-black" : "border-gray-400"
+    } cursor-pointer`}
+    onClick={() => setFreelanceGoal("experience")}
+  >
+    To get experience, for a full-time job
+  </button>
+  <button
+    className={`px-4 py-2 border-2 rounded-2xl ${
+      freelanceGoal === "no_goal" ? "border-black" : "border-gray-400"
+    } cursor-pointer`}
+    onClick={() => setFreelanceGoal("no_goal")}
+  >
+    I don’t have a goal in mind yet
+  </button>
+</div>
+
 
       {/* Navigation buttons */}
       <div style={{ display: "flex", justifyContent: "space-between", marginTop: "30px" }}>
-        <button onClick={handleBack} style={{ padding: "10px 20px", cursor: "pointer" }}>
-          Back
+      <button
+    onClick={handleBack}
+    className="px-5 py-2 text-lg border border-gray-400 rounded-lg hover:bg-gray-100 transition"
+  > Back
         </button>
-        <button onClick={handleNext} style={{ padding: "10px 20px", cursor: "pointer" }}>
-          Next
+        <button
+    onClick={handleNext}
+    className="px-5 py-2 text-lg bg-black text-white rounded-lg hover:bg-gray-800 transition"
+    > 
+  Next
         </button>
       </div>
     </div>

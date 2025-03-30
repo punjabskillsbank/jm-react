@@ -11,10 +11,19 @@ import Step5 from "./pages/Step5";
 import Step6 from "./pages/Step6";
 import Step7 from "./pages/Step7";
 import Step8 from "./pages/Step8";
+import Step9 from "./pages/Step9";
+import './index.css';
+import Step10 from "./pages/Step10";
+import Step11 from "./pages/Step11";
+import Step12 from "./pages/Step12";
+import Step13 from "./pages/Step13";
+import Step14 from "./pages/Step14";
+import Step15 from "./pages/Step15";
+import Step16 from "./pages/Step16";
 
 function App() {
   return (
-    <SignupProvider> {/* ✅ Wrap everything inside SignupProvider */}
+    <SignupProvider> 
       <Router>
         <Routes>
           <Route path="/" element={<Landing />} />
@@ -26,9 +35,16 @@ function App() {
           <Route path="/signup/step6" element={<Step6/>} />
           <Route path="/signup/step7" element={<Step7/>} />
           <Route path="/signup/step8" element={<Step8/>} />
-          <Route path="/profile-review" element={<ProfileReview />} />
+          <Route path="/signup/step9" element={<Step9/>} />
+          <Route path="/signup/step10" element={<Step10 />} />
+          <Route path="/signup/step11" element={<Step11 />} />
+          <Route path="/signup/step12" element={<Step12 />} />
+          <Route path="/signup/step13" element={<Step13 />} />
+          <Route path="/signup/step14" element={<Step14 />} />
+          <Route path="/signup/step15" element={<Step15 />} />
+          <Route path="/signup/step16" element={<Step16 />} />
+          <Route path="/signup/profile-review" element={<ProfileReview />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          {/* Optional: Catch-all route */}
           <Route path="*" element={<h1>404 Not Found</h1>} />
         </Routes>
       </Router>

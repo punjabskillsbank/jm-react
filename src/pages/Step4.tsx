@@ -22,55 +22,63 @@ const Step4 = () => {
   };
 
   return (
-    <div style={{ maxWidth: "500px", margin: "auto", textAlign: "center", padding: "20px" }}>
-      <p>1/3</p>
-      <h2>A few quick questions: first, have you freelanced before?</h2>
+    <div className="max-w-4xl mx-auto center p-5 my-7" >
+      <p className="my-7">1/3</p>
+      <h2 className="font-bold">A few quick questions: first, have you freelanced before?</h2>
       <p>
         This lets us know how much help to give you along the way. We won’t share your answer
         with anyone else, including potential clients.
       </p>
+      <div className="flex flex-row gap-4 mt-5">
+  <button
+    className={`px-4 py-2 border-2 rounded-2xl flex-1 ${
+      experienceLevel === "new" ? "border-black" : "border-gray-400"
+    } cursor-pointer`}
+    onClick={() => setExperienceLevel("new")}
+  >
+    I am brand new to this
+  </button>
+  <button
+    className={`px-4 py-2 border-2 rounded-2xl flex-1 ${
+      experienceLevel === "some_experience" ? "border-black" : "border-gray-400"
+    } cursor-pointer`}
+    onClick={() => setExperienceLevel("some_experience")}
+  >
+    I have some experience
+  </button>
+  <button
+    className={`px-4 py-2 border-2 rounded-2xl flex-1 ${
+      experienceLevel === "expert" ? "border-black" : "border-gray-400"
+    } cursor-pointer`}
+    onClick={() => setExperienceLevel("expert")}
+  >
+    I am an expert
+  </button>
+  <button
+    className={`px-4 py-2 border-2 rounded-2xl flex-1 ${
+      experienceLevel === "pro" ? "border-black" : "border-gray-400"
+    } cursor-pointer`}
+    onClick={() => setExperienceLevel("pro")}
+  >
+    I am a pro
+  </button>
+</div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "20px" }}>
-        <button
-          style={{
-            padding: "10px",
-            border: `2px solid ${experienceLevel === "new" ? "black" : "lightgray"}`,
-            cursor: "pointer",
-          }}
-          onClick={() => setExperienceLevel("new")}
-        >
-          I am brand new to this
-        </button>
-        <button
-          style={{
-            padding: "10px",
-            border: `2px solid ${experienceLevel === "some_experience" ? "black" : "lightgray"}`,
-            cursor: "pointer",
-          }}
-          onClick={() => setExperienceLevel("some_experience")}
-        >
-          I have some experience
-        </button>
-        <button
-          style={{
-            padding: "10px",
-            border: `2px solid ${experienceLevel === "expert" ? "black" : "lightgray"}`,
-            cursor: "pointer",
-          }}
-          onClick={() => setExperienceLevel("expert")}
-        >
-          I am an expert
-        </button>
-      </div>
+
 
       {/* Navigation buttons */}
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "30px" }}>
-        <button onClick={handleBack} style={{ padding: "10px 20px", cursor: "pointer" }}>
-          Back
-        </button>
-        <button onClick={handleNext} style={{ padding: "10px 20px", cursor: "pointer" }}>
-          Next
-        </button>
+      <div className="flex justify-between mt-7">
+              <button
+            onClick={handleBack}
+            className="px-5 py-2 text-lg border border-gray-400 rounded-lg hover:bg-gray-100 transition"
+          > Back
+                </button>
+                <button
+            onClick={handleNext}
+            className="px-5 py-2 text-lg bg-black text-white rounded-lg hover:bg-gray-800 transition"
+          >
+                  Next
+                </button>
       </div>
     </div>
   );

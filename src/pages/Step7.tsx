@@ -12,29 +12,30 @@ const Step7 = () => {
   };
 
   return (
-    <div style={{ maxWidth: "500px", margin: "auto", textAlign: "center", padding: "20px" }}>
-      <p>1/10</p>
-      <h2> Create your profile</h2>
+    <div className="max-w-4xl mx-auto center p-5 my-7">
+      <p className="my-7">1/10</p>
+      <h2 className="font-bold my-8"> Create your profile</h2>
       
-      <h1>Now it's the right time to tell us about yourself.</h1>
-      <p>
+      <h1 className="font-bold my-8">Now it's the right time to tell us about yourself.</h1>
+      <p className="my-7">
         We need to get a sense of your education, experience, and skills.
         It's quickest to import your information, and you can edit it before your profile goes live.
       </p>
 
-      <blockquote style={{ backgroundColor: "#f3f3f3", padding: "10px", borderLeft: "5px solid #00aaff" }}>
-        <strong>Upwork Pro Tip:</strong> Your Upwork profile is how you stand out from the crowd.
-        It's what you use to win work, so let's make it a good one.
-      </blockquote>
 
       {/* Navigation Buttons */}
-      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
-        <button onClick={handleBack} style={{ padding: "10px 20px", fontSize: "16px", cursor: "pointer" }}>
-          Back
-        </button>
-        <button onClick={handleNext} style={{ padding: "10px 20px", fontSize: "16px", cursor: "pointer" }}>
-          Next
-        </button>
+      <div className="flex justify-between mt-7">
+              <button
+            onClick={handleBack}
+            className="px-5 py-2 text-lg border border-gray-400 rounded-lg hover:bg-gray-100 transition"
+          > Back
+                </button>
+                <button
+            onClick={handleNext}
+            className="px-5 py-2 text-lg bg-black text-white rounded-lg hover:bg-gray-800 transition"
+          >
+                  Next
+                </button>
       </div>
     </div>
   );

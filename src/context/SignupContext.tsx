@@ -3,15 +3,30 @@ import React, { createContext, useContext, useState } from "react";
 // Define the type for signup data
 interface SignupData {
   name?: string;
+  firstName?: string;
+  lastName?: string;
   email?: string;
   password?: string;
-  [key: string]: string | number | boolean | undefined; // Allow dynamic keys with specific types
+  skills?: string[];
+  experience?: string;
+  isAbcMember?: boolean;
+  dob?: string;
+  country?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  phone?: string;
+  photo?: File | null;
+  hourlyRate?: number;
+  education?: string; // ✅ Added Education Field
+  [key: string]: unknown;
 }
 
 // Define the type for context
 interface SignupContextType {
-  signupData: SignupData; // ✅ Define signupData
-  updateSignupData: (newData: SignupData) => void; // ✅ Define update function
+  signupData: SignupData;
+  updateSignupData: (newData: Partial<SignupData>) => void;
 }
 
 // Create context with default values
@@ -20,8 +35,17 @@ const SignupContext = createContext<SignupContextType | undefined>(undefined);
 export const SignupProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [signupData, setSignupData] = useState<SignupData>({});
 
-  const updateSignupData = (newData: SignupData) => {
-    setSignupData((prev) => ({ ...prev, ...newData }));
+  const updateSignupData = (newData: Partial<SignupData>) => {
+    setSignupData((prev) => {
+      const updatedData = { ...prev, ...newData };
+
+      // Automatically update full name if first and last names are provided
+      if (updatedData.firstName && updatedData.lastName) {
+        updatedData.name = `${updatedData.firstName} ${updatedData.lastName}`;
+      }
+
+      return updatedData;
+    });
   };
 
   return (
