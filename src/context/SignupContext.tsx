@@ -19,7 +19,11 @@ interface SignupData {
   phone?: string;
   photo?: File | null;
   hourlyRate?: number;
-  education?: string; // ✅ Added Education Field
+  education?: string;
+  title?: string;
+  bio?: string;
+  timezone?: string;
+  profileStatus?: string;
   [key: string]: unknown;
 }
 
@@ -29,7 +33,6 @@ interface SignupContextType {
   updateSignupData: (newData: Partial<SignupData>) => void;
 }
 
-// Create context with default values
 const SignupContext = createContext<SignupContextType | undefined>(undefined);
 
 export const SignupProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -39,7 +42,6 @@ export const SignupProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     setSignupData((prev) => {
       const updatedData = { ...prev, ...newData };
 
-      // Automatically update full name if first and last names are provided
       if (updatedData.firstName && updatedData.lastName) {
         updatedData.name = `${updatedData.firstName} ${updatedData.lastName}`;
       }
@@ -55,7 +57,6 @@ export const SignupProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   );
 };
 
-// Hook to use Signup Context
 export const useSignup = (): SignupContextType => {
   const context = useContext(SignupContext);
   if (!context) {

@@ -52,3 +52,26 @@ export default tseslint.config({
   },
 })
 ```
+
+
+
+
+Tech stack used:
+
+Vite 
+React
+Typescript
+Tailwind Css
+
+Axios for sending requests
+
+Steps to do after cloning repo to local system:
+1. Ensure you current working path should be jm-react>
+2. In terminal, run:
+    npm install (some dependencies will be installed)
+    npm install tailwindcss @tailwindcss/vite (for tailwind css/ refer to official doc)
+    npm npm install react-router-dom axios
+    npx tailwindcss init -p
+
+3. npm install vite
+4. npm run dev (frontend server will be running on port 5173)
