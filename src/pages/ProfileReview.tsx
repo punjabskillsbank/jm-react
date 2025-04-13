@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useSignup } from "../context/SignupContext";
 import axios from "axios";
+import { getMockUserId } from "../utils/initUser";
+
 
 // Helper to convert file to base64
 const toBase64 = (file: File): Promise<string> =>
@@ -10,10 +12,16 @@ const toBase64 = (file: File): Promise<string> =>
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = reject;
   });
-
+  const freelancerId = getMockUserId("Ishmeet Singh"); // Get ID by name
+  console.log("Freelancer ID:", freelancerId);
+  
+const storedFreelancerId = getMockUserId(); // Get ID from localStorage
+console.log("Stored Freelancer ID:", storedFreelancerId);
 const ProfileReview = () => {
   const { signupData } = useSignup();
   const navigate = useNavigate();
+  localStorage.clear();
+  
 
   const handlePublishProfile = async () => {
     try {
@@ -24,43 +32,48 @@ const ProfileReview = () => {
       }
 
       let profilePhotoBase64 = "";
-
       if (signupData.photo) {
         profilePhotoBase64 = await toBase64(signupData.photo);
       }
 
       const payload = {
-        freelancerId: userId, // UUID
-        title: signupData.title,
-        bio: signupData.bio,
-        hourlyRate: signupData.hourlyRate,
-        city: signupData.city,
-        state: signupData.state,
-        country: signupData.country,
-        postalCode: signupData.zip,
-        address: signupData.address,
-        phoneNumber: signupData.phone,
+        freelancerId: userId,
+        title: signupData.title?.trim(),
+        bio: signupData.bio?.trim(),
+        hourlyRate: Number(signupData.hourlyRate),
+        city: signupData.city?.trim(),
+        state: signupData.state?.trim(),
+        country: signupData.country?.trim(),
+        postalCode: signupData.zip?.trim(),
+        address: signupData.address?.trim(),
+        phoneNumber: signupData.phone?.trim(),
         isAbcMember: signupData.abcMembership === "yes",
         profilePhotoURL: profilePhotoBase64,
-        profileStatus: "APPROVED", // Must be uppercase to match enum
-        createdAt: new Date().toISOString(), // or backend can handle this
+        profileStatus: "PENDING",
+        createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
       
-      
 
-      const response = await axios.post("http://localhost:8081/api/freelancer/create_profile", payload);
+      console.log("📦 Payload sent to backend:", payload);
 
+      const response = await axios.post(
+        "http://localhost:8081/api/freelancer/create_profile",
+        payload,
+        {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
 
-
-
-
-      console.log("Profile created:", response.data);
-      alert("Profile published!");
+      console.log("✅ Profile created:", response.data);
+      alert("🎉 Profile published successfully!");
       navigate("/freelancer-dashboard");
+
     } catch (error) {
-      console.error("Error publishing profile:", error);
-      alert("Failed to publish profile. Check console.");
+      console.error("❌ Error publishing profile:", error);
+      alert("Failed to publish profile. Check the console for details.");
     }
   };
 
