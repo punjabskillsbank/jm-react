@@ -14,7 +14,7 @@ const Step5 = () => {
       return;
     }
     updateSignupData({ freelanceGoal });
-    navigate("/signup/step6"); // Update to the correct next step
+    navigate("/signup/step6"); 
   };
 
   const handleBack = () => {

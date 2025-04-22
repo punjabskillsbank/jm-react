@@ -1,29 +1,27 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSignup } from "../context/SignupContext";
 import axios from "axios";
 import { getMockUserId } from "../utils/initUser";
 
 
-// Helper to convert file to base64
-const toBase64 = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-  });
-  const freelancerId = getMockUserId("Ishmeet Singh"); // Get ID by name
-  console.log("Freelancer ID:", freelancerId);
-  
-const storedFreelancerId = getMockUserId(); // Get ID from localStorage
-console.log("Stored Freelancer ID:", storedFreelancerId);
 const ProfileReview = () => {
   const { signupData } = useSignup();
   const navigate = useNavigate();
-  localStorage.clear();
-  
+  const [loading, setLoading] = useState(false);
+  const [timezone, setTimezone] = useState("Asia/Kolkata");
+
+  useEffect(() => {
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    setTimezone(userTimezone);
+    console.log("Freelancer ID (mock):", getMockUserId("Ishmeet Singh"));
+    console.log("Stored Freelancer ID:", getMockUserId());
+  }, []);
 
   const handlePublishProfile = async () => {
+    if (loading) return;
+
+    setLoading(true);
     try {
       const userId = localStorage.getItem("user_id");
       if (!userId) {
@@ -31,31 +29,25 @@ const ProfileReview = () => {
         return;
       }
 
-      let profilePhotoBase64 = "";
-      if (signupData.photo) {
-        profilePhotoBase64 = await toBase64(signupData.photo);
-      }
+      
 
       const payload = {
         freelancerId: userId,
-        title: signupData.title?.trim(),
-        bio: signupData.bio?.trim(),
+        title: signupData.title?.trim() || "",
+        bio: signupData.bio?.trim() || "",
         hourlyRate: Number(signupData.hourlyRate),
-        city: signupData.city?.trim(),
-        state: signupData.state?.trim(),
-        country: signupData.country?.trim(),
-        postalCode: signupData.zip?.trim(),
-        address: signupData.address?.trim(),
-        phoneNumber: signupData.phone?.trim(),
+        city: signupData.city?.trim() || "",
+        state: signupData.state?.trim() || "",
+        country: signupData.country?.trim() || "",
+        postalCode: signupData.zip?.trim() || "",
+        address: signupData.address?.trim() || "",
+        phoneNumber: signupData.phone?.trim() || "",
         isAbcMember: signupData.abcMembership === "yes",
-        profilePhotoURL: profilePhotoBase64,
+        profilePhotoURL:"sample_url",
         profileStatus: "PENDING",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
       };
-      
 
-      console.log("📦 Payload sent to backend:", payload);
+      console.log("Payload sent to backend:", payload);
 
       const response = await axios.post(
         "http://localhost:8081/api/freelancer/create_profile",
@@ -67,13 +59,14 @@ const ProfileReview = () => {
         }
       );
 
-      console.log("✅ Profile created:", response.data);
-      alert("🎉 Profile published successfully!");
-      navigate("/freelancer-dashboard");
-
+      console.log("Profile created:", response.data);
+      alert("Profile published successfully!");
+      navigate("/dashboard");
     } catch (error) {
       console.error("❌ Error publishing profile:", error);
       alert("Failed to publish profile. Check the console for details.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,23 +80,26 @@ const ProfileReview = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="border p-6 rounded-lg shadow-sm">
           <h3 className="text-lg font-semibold mb-4">Personal Details</h3>
-          <p><strong>Title:</strong> {signupData.title}</p>
-          <p><strong>Bio:</strong> {signupData.bio}</p>
-          <p><strong>Email:</strong> {signupData.email}</p>
-          <p><strong>Phone:</strong> {signupData.phone}</p>
-          <p><strong>Country:</strong> {signupData.country}</p>
+          <p><strong>Title:</strong> {signupData.title || "N/A"}</p>
+          <p><strong>Bio:</strong> {signupData.bio || "N/A"}</p>
+          <p><strong>Email:</strong> {signupData.email || "N/A"}</p>
+          <p><strong>Phone:</strong> {signupData.phone || "N/A"}</p>
+          <p><strong>Country:</strong> {signupData.country || "N/A"}</p>
           <p><strong>ABC Membership:</strong> {signupData.abcMembership === "yes" ? "Yes" : "No"}</p>
         </div>
 
         <div className="border p-6 rounded-lg shadow-sm">
           <h3 className="text-lg font-semibold mb-4">Address</h3>
-          <p>{signupData.address}, {signupData.city}, {signupData.state}, {signupData.zip}</p>
+          <p>
+            {signupData.address || "N/A"}, {signupData.city || "N/A"},{" "}
+            {signupData.state || "N/A"}, {signupData.zip || "N/A"}
+          </p>
         </div>
 
         <div className="border p-6 rounded-lg shadow-sm">
           <h3 className="text-lg font-semibold mb-4">Freelancing Details</h3>
           <p><strong>Hourly Rate:</strong> ${signupData.hourlyRate || "Not specified"}/hr</p>
-          <p><strong>Timezone:</strong> {signupData.timezone || "Asia/Kolkata"}</p>
+          <p><strong>Timezone:</strong> {timezone}</p>
         </div>
 
         <div className="border p-6 rounded-lg shadow-sm">
@@ -130,9 +126,12 @@ const ProfileReview = () => {
 
         <button
           onClick={handlePublishProfile}
-          className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600"
+          disabled={loading}
+          className={`px-6 py-3 rounded-lg text-white ${
+            loading ? "bg-green-300 cursor-not-allowed" : "bg-green-500 hover:bg-green-600"
+          }`}
         >
-          Publish Profile 🚀
+          {loading ? "Publishing..." : "Publish Profile 🚀"}
         </button>
       </div>
     </div>

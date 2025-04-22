@@ -52,8 +52,7 @@ const Step13 = () => {
       <div className="flex justify-between mt-6">
         <button
           onClick={() => navigate("/signup/step12")}
-          className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
-        >
+          className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400" >
           Back
         </button>
 
@@ -62,8 +61,7 @@ const Step13 = () => {
           className={`px-4 py-2 rounded-md text-white ${
             abcMembership ? "bg-green-500 hover:bg-green-600" : "bg-gray-400 cursor-not-allowed"
           }`}
-          disabled={!abcMembership}
-        >
+          disabled={!abcMembership}>
           Next, Add Overview
         </button>
       </div>

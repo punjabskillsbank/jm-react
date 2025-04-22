@@ -24,7 +24,6 @@ const Step15 = () => {
       </p>
 
       <div className="flex flex-col gap-4">
-        {/* Hourly Rate Input */}
         <label className="font-semibold">Hourly Rate ($/hr)</label>
         <input
           type="number"
@@ -35,7 +34,6 @@ const Step15 = () => {
           onChange={(e) => setHourlyRate(Number(e.target.value))}
         />
 
-        {/* Breakdown */}
         <div className="p-4 border rounded-md bg-gray-100">
           <p className="flex justify-between">
             <span>Total amount client sees:</span>
@@ -52,19 +50,17 @@ const Step15 = () => {
         </div>
       </div>
 
-      {/* Navigation Buttons */}
+      
       <div className="flex justify-between mt-6">
         <button
           onClick={() => navigate("/signup/step14")}
-          className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
-        >
+          className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"  >
           Back
         </button>
 
         <button
           onClick={handleNext}
-          className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-        >
+          className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
           Next, Add Photo & Location
         </button>
       </div>

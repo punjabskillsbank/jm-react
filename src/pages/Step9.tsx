@@ -34,15 +34,12 @@ const Step10 = () => {
       <div className="flex justify-between mt-6">
         <button
           onClick={() => navigate("/signup/step8")}
-          className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
-        >
+          className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400">
           Back
         </button>
-
         <button
           onClick={handleNext}
-          className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-        >
+          className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
           Next, Add Your Experience
         </button>
       </div>

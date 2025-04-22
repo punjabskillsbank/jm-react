@@ -20,7 +20,6 @@ const Step8 = () => {
     "Web, Mobile & Software Dev",
     "Writing",
   ];
-
   // Track selected categories
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
     Array.isArray(signupData.workCategories) ? signupData.workCategories : []
@@ -35,10 +34,10 @@ const Step8 = () => {
   const handleBack = () => {
     navigate("/signup/step7");
   };
-  // Proceed to Dashboard with stored data
+  
   const handleNext = () => {
     updateSignupData({ workCategories: JSON.stringify(selectedCategories) });
-    navigate("/signup/step9"); // Redirects to Dashboard
+    navigate("/signup/step9");
   };
 
   return (
@@ -62,30 +61,20 @@ const Step8 = () => {
       </div>
 
       <div className="flex justify-between mt-7">
-              <button
+          <button
             onClick={handleBack}
-            className="px-5 py-2 text-lg border border-gray-400 rounded-lg hover:bg-gray-100 transition"
-          > Back
-                </button>
-                <button
+            className="px-5 py-2 text-lg border border-gray-400 rounded-lg hover:bg-gray-100 transition">
+            Back
+          </button>
+          <button
             onClick={handleNext}
-            className="px-5 py-2 text-lg bg-black text-white rounded-lg hover:bg-gray-800 transition"
-          >
-                  Next
-                </button>
+            className="px-5 py-2 text-lg bg-black text-white rounded-lg hover:bg-gray-800 transition">
+            Next
+          </button>
       </div>
     </div>
   );
 };
-/*
-const buttonStyle = {
-  padding: "10px 20px",
-  fontSize: "16px",
-  cursor: "pointer",
-  borderRadius: "5px",
-  border: "none",
-  background: "#28a745",
-  color: "white",
-};*/
+
 
 export default Step8;

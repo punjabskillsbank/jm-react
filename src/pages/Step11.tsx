@@ -15,7 +15,7 @@ const Step11 = () => {
 
   const handleNext = () => {
     if (experienceFile) {
-      updateSignupData({ experience: experienceFile.name }); // Save file name for now
+      updateSignupData({ experience: experienceFile.name });
     }
     navigate("/signup/step12");
   };
@@ -53,16 +53,14 @@ const Step11 = () => {
         <div className="flex gap-4">
           <button
             onClick={() => navigate("/signup/step12")}
-            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-          >
+            className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
             Skip for Now
           </button>
 
           <button
             onClick={handleNext}
             className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-            disabled={!experienceFile}
-          >
+            disabled={!experienceFile}>
             Next, Add Your Education
           </button>
         </div>

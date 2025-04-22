@@ -50,8 +50,6 @@ const Step16 = () => {
       <p className="text-gray-600 text-center mb-6">
         A professional photo helps build trust. We also need your details for secure transactions.
       </p>
-
-      {/* Photo Upload */}
       <div className="mb-4">
         <label className="block font-semibold">Upload Photo</label>
         <input
@@ -62,8 +60,6 @@ const Step16 = () => {
         />
         {errors.photo && <p className="text-red-500 text-sm">{errors.photo}</p>}
       </div>
-
-      {/* Date of Birth */}
       <div className="mb-4">
         <label className="block font-semibold">Date of Birth</label>
         <input
@@ -74,8 +70,6 @@ const Step16 = () => {
         />
         {errors.dob && <p className="text-red-500 text-sm">{errors.dob}</p>}
       </div>
-
-      {/* Country */}
       <div className="mb-4">
         <label className="block font-semibold">Country</label>
         <input
@@ -86,8 +80,6 @@ const Step16 = () => {
         />
         {errors.country && <p className="text-red-500 text-sm">{errors.country}</p>}
       </div>
-
-      {/* Address Fields */}
       <div className="grid grid-cols-2 gap-4">
         <div className="mb-4">
           <label className="block font-semibold">Street Address</label>
@@ -110,8 +102,6 @@ const Step16 = () => {
           {errors.city && <p className="text-red-500 text-sm">{errors.city}</p>}
         </div>
       </div>
-
-      {/* State & Zip */}
       <div className="grid grid-cols-2 gap-4">
         <div className="mb-4">
           <label className="block font-semibold">State/Province</label>
@@ -134,8 +124,6 @@ const Step16 = () => {
           {errors.zip && <p className="text-red-500 text-sm">{errors.zip}</p>}
         </div>
       </div>
-
-      {/* Phone Number */}
       <div className="mb-4">
         <label className="block font-semibold">Phone Number</label>
         <input
@@ -146,20 +134,16 @@ const Step16 = () => {
         />
         {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
       </div>
-
-      {/* Navigation Buttons */}
       <div className="flex justify-between mt-6">
         <button
           onClick={() => navigate("/signup/step15")}
-          className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
-        >
+          className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400">
           Back
         </button>
 
         <button
           onClick={handleNext}
-          className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-        >
+          className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
           Review Your Profile
         </button>
       </div>

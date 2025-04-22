@@ -4,11 +4,11 @@ const Step7 = () => {
   const navigate = useNavigate(); // Navigation hook
 
   const handleNext = () => {
-    navigate("/signup/step8"); // Navigate to Step8
+    navigate("/signup/step8");
   };
 
   const handleBack = () => {
-    navigate("/signup/step6"); // Navigate to Step6
+    navigate("/signup/step6"); 
   };
 
   return (
@@ -21,9 +21,6 @@ const Step7 = () => {
         We need to get a sense of your education, experience, and skills.
         It's quickest to import your information, and you can edit it before your profile goes live.
       </p>
-
-
-      {/* Navigation Buttons */}
       <div className="flex justify-between mt-7">
               <button
             onClick={handleBack}

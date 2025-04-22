@@ -54,7 +54,7 @@ const Step6 = () => {
     onClick={handleNext}
     className="px-5 py-2 text-lg bg-black text-white rounded-lg hover:bg-gray-800 transition"
   >
-    Next, create a profile
+    Next, Create a Profile
   </button>
 </div>
 

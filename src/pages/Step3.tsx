@@ -2,7 +2,7 @@ import { useSignup } from "../context/SignupContext";
 import { useNavigate } from "react-router-dom";
 
 const Step3 = () => {
-  const { signupData } = useSignup(); // Get user data from context
+  const { signupData } = useSignup(); 
   const username = signupData.firstName || "User"; // Fallback if name is missing
   const navigate = useNavigate(); // Navigation hook
 

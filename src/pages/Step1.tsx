@@ -18,7 +18,7 @@ const Step1 = () => {
     }
 
     updateSignupData({ role: selectedRole });
-    navigate("/signup/step2"); // Redirect to Step 2
+    navigate("/signup/step2"); 
   };
 
   return (

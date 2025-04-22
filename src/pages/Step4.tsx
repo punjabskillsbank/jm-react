@@ -14,7 +14,7 @@ const Step4 = () => {
       return;
     }
     updateSignupData({ experienceLevel });
-    navigate("/signup/step5"); // Update to the correct next step
+    navigate("/signup/step5");
   };
 
   const handleBack = () => {

@@ -10,7 +10,7 @@ interface SignupFormData {
   country: string;
   agreeToTerms: boolean;
   receiveEmails: boolean;
-  [key: string]: string | boolean; // Allow dynamic properties to match SignupData
+  [key: string]: string | boolean; 
 }
 
 const Step2 = () => {
