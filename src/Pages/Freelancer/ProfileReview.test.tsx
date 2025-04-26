@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import ProfileReview from "./src/pages/ProfileReview";
-import { useSignup } from "./src/context/SignupContext";
+import ProfileReview from "./ProfileReview";
+import { useSignup } from "./SignupContext";
 import { BrowserRouter } from "react-router-dom";
 import axios from "axios";
 

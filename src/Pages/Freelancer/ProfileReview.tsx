@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSignup } from "../context/SignupContext";
+import { useSignup } from "./SignupContext";
 import axios from "axios";
-import { getMockUserId } from "../utils/initUser";
+import { getMockUserId } from "../../utils/initUser";
 
 
 const ProfileReview = () => {

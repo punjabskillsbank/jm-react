@@ -1,4 +1,4 @@
-import { mockUsers } from "../mockUsers";
+import { mockUsers } from "./mockUsers";
 
 export const initMockUser = () => {
   if (!localStorage.getItem("user_id")) {

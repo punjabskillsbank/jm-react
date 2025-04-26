@@ -1,4 +1,4 @@
-import { useSignup } from "../context/SignupContext";
+import { useSignup } from "./SignupContext";
 import { useNavigate } from "react-router-dom";
 
 const Step3 = () => {

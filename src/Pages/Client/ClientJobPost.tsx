@@ -1,6 +1,6 @@
 // src/pages/ClientJobPost.tsx
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext.tsx"; // Adjust the import path as necessary
+import { useAuth } from "./AuthContext.js"; // Adjust the import path as necessary
 
 const ClientJobPost = () => {
   const { token, role, email } = useAuth();

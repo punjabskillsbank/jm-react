@@ -1,7 +1,7 @@
 // src/App.tsx
 import { BrowserRouter as Router } from "react-router-dom";
 import { useEffect } from "react";
-import { SignupProvider } from "./context/SignupContext";
+import { SignupProvider } from "./Pages/Freelancer/SignupContext";
 import AppRoutes from "./router/AppRoutes";
 import './index.css';
 import { initMockUser } from "./utils/initUser";

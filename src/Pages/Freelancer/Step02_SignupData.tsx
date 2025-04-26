@@ -1,6 +1,6 @@
 import { useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSignup } from "../context/SignupContext";
+import { useSignup } from "./SignupContext";
 
 interface SignupFormData {
   firstName: string;
