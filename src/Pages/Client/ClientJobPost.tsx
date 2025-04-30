@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 // import { useAuth } from "./AuthContext"; 
 
@@ -44,9 +43,9 @@ const ClientJobPost = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <input name="title" value={formData.title} onChange={handleChange} placeholder="Job Title" required className="w-full p-2 border rounded" />
         <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Job Description" rows={5} className="w-full p-2 border rounded" />
-        
+
         <input name="category" value={formData.category} onChange={handleChange} placeholder="Job Category" className="w-full p-2 border rounded" />
-        
+
         <select name="experienceLevel" value={formData.experienceLevel} onChange={handleChange} className="w-full p-2 border rounded">
           <option value="">Select Experience Level</option>
           <option value="entry">Entry</option>
