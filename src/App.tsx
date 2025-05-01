@@ -2,7 +2,7 @@
 import { BrowserRouter as Router } from "react-router-dom";
 import { useEffect } from "react";
 import { AuthProvider } from "../src/Pages/Client/AuthContext"; 
-import { SignupProvider } from "./Pages/Freelancer/SignupContext";
+import { SignupProvider } from "./pages/Freelancer/Signup/SignupContext";
 import AppRoutes from "./router/AppRoutes";
 import './index.css';
 import { initMockUser } from "./utils/initUser";

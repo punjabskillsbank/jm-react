@@ -1,14 +1,14 @@
 import { useNavigate } from "react-router-dom";
 
-const Step6 = () => {
+const Step4 = () => {
   const navigate = useNavigate();
 
   const handleNext = () => {
-    navigate("/signup/step7");
+    navigate("/signup/step5");
   };
 
   const handleBack = () => {
-    navigate("/signup/step5");
+    navigate("/signup/step3");
   };
 
   return (
@@ -62,4 +62,4 @@ const Step6 = () => {
   );
 };
 
-export default Step6;
+export default Step4;

@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useSignup } from "./SignupContext";
 
-const Step4 = () => {
+const Step3 = () => {
   const navigate = useNavigate();
   const { signupData, updateSignupData } = useSignup();
 
@@ -14,11 +14,11 @@ const Step4 = () => {
       return;
     }
     updateSignupData({ experienceLevel });
-    navigate("/signup/step5");
+    navigate("/signup/step4");
   };
 
   const handleBack = () => {
-    navigate("/signup/step3");
+    navigate("/signup/step2");
   };
 
   return (
@@ -84,4 +84,4 @@ const Step4 = () => {
   );
 };
 
-export default Step4;
+export default Step3;

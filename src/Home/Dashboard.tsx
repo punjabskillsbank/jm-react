@@ -1,4 +1,4 @@
-import { useSignup } from "../Pages/Freelancer/SignupContext";
+import { useSignup } from "../pages/Freelancer/Signup/SignupContext";
 
 const Dashboard = () => {
   const { signupData } = useSignup();

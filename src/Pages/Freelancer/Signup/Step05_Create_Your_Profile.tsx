@@ -1,14 +1,14 @@
 import { useNavigate } from "react-router-dom";
 
-const Step7 = () => {
+const Step5 = () => {
   const navigate = useNavigate(); // Navigation hook
 
   const handleNext = () => {
-    navigate("/signup/step8");
+    navigate("/signup/step6");
   };
 
   const handleBack = () => {
-    navigate("/signup/step6"); 
+    navigate("/signup/step4"); 
   };
 
   return (
@@ -38,4 +38,4 @@ const Step7 = () => {
   );
 };
 
-export default Step7;
+export default Step5;

@@ -14,8 +14,8 @@ const suggestedSkills = [
   "Presentation Design",
   "Presentations"
 ];
-
-const Step9 = () => {
+//TODO GET SKILLS FROM API
+const Step8 = () => {
   const { signupData, updateSignupData } = useSignup();
   const navigate = useNavigate();
   const [selectedSkills, setSelectedSkills] = useState<string[]>(
@@ -34,7 +34,7 @@ const Step9 = () => {
 
   const handleNext = () => {
     updateSignupData({ skills: selectedSkills });
-    navigate("/signup/step11");
+    navigate("/signup/step9");
   };
 
   return (
@@ -79,7 +79,7 @@ const Step9 = () => {
 
       <div className="flex justify-between mt-6">
         <button
-          onClick={() => navigate("/signup/step9")}
+          onClick={() => navigate("/signup/step7")}
           className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400">
           Back
         </button>
@@ -94,4 +94,4 @@ const Step9 = () => {
   );
 };
 
-export default Step9;
+export default Step8;

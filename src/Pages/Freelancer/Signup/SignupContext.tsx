@@ -1,7 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState } from "react";
 
-// Define the type for signup data
 interface SignupData {
   name?: string;
   firstName?: string;
@@ -9,7 +8,16 @@ interface SignupData {
   email?: string;
   password?: string;
   skills?: string[];
-  experience?: string;
+  experience?: {
+    title: string;
+    description: string;
+    budget_type: "fixed" | "hourly";
+    fixed_price: string;
+    hourly_min_rate: string;
+    hourly_max_rate: string;
+    project_duration: string;
+    experience_level: "beginner" | "intermediate" | "expert";
+  }[];  
   isAbcMember?: boolean;
   dob?: string;
   country?: string;
@@ -20,7 +28,13 @@ interface SignupData {
   phone?: string;
   photo?: File | null;
   hourlyRate?: number;
-  education?: string;
+  education?: {
+    institute: string;
+    degree: string;
+    start_year: string;
+    end_year: string;
+    description: string;
+  }[];  
   title?: string;
   bio?: string;
   timezone?: string;
@@ -28,7 +42,7 @@ interface SignupData {
   [key: string]: unknown;
 }
 
-// Define the type for context
+// Define the context type
 interface SignupContextType {
   signupData: SignupData;
   updateSignupData: (newData: Partial<SignupData>) => void;

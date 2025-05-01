@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSignup } from "./SignupContext";
+import { useSignup } from "../Signup/SignupContext";
 import axios from "axios";
-import { getMockUserId } from "../../utils/initUser";
-
+import { getMockUserId } from "../../../utils/initUser";
 
 const ProfileReview = () => {
   const { signupData } = useSignup();
@@ -14,14 +13,14 @@ const ProfileReview = () => {
   useEffect(() => {
     const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     setTimezone(userTimezone);
-    console.log("Freelancer ID (mock):", getMockUserId("Ishmeet Singh"));
+    console.log("Freelancer ID (mock):", getMockUserId(signupData.name || "User"));
     console.log("Stored Freelancer ID:", getMockUserId());
-  }, []);
+  }, [signupData.name]);
 
   const handlePublishProfile = async () => {
     if (loading) return;
-
     setLoading(true);
+
     try {
       const userId = localStorage.getItem("user_id");
       if (!userId) {
@@ -29,22 +28,22 @@ const ProfileReview = () => {
         return;
       }
 
-      
-
       const payload = {
         freelancerId: userId,
+        name: signupData.name || "",
         title: signupData.title?.trim() || "",
         bio: signupData.bio?.trim() || "",
-        hourlyRate: Number(signupData.hourlyRate),
+        hourlyRate: signupData.hourlyRate || 0,
         city: signupData.city?.trim() || "",
         state: signupData.state?.trim() || "",
         country: signupData.country?.trim() || "",
         postalCode: signupData.zip?.trim() || "",
         address: signupData.address?.trim() || "",
         phoneNumber: signupData.phone?.trim() || "",
-        isAbcMember: signupData.abcMembership === "yes",
-        profilePhotoURL:"sample_url",
+        isAbcMember: !!signupData.isAbcMember,
+        profilePhotoURL: "sample_url", // Replace with actual upload logic if needed
         profileStatus: "PENDING",
+        timezone: timezone
       };
 
       console.log("Payload sent to backend:", payload);
@@ -54,8 +53,8 @@ const ProfileReview = () => {
         payload,
         {
           headers: {
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         }
       );
 
@@ -80,12 +79,13 @@ const ProfileReview = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="border p-6 rounded-lg shadow-sm">
           <h3 className="text-lg font-semibold mb-4">Personal Details</h3>
+          <p><strong>Name:</strong> {signupData.name || "N/A"}</p>
           <p><strong>Title:</strong> {signupData.title || "N/A"}</p>
           <p><strong>Bio:</strong> {signupData.bio || "N/A"}</p>
           <p><strong>Email:</strong> {signupData.email || "N/A"}</p>
           <p><strong>Phone:</strong> {signupData.phone || "N/A"}</p>
           <p><strong>Country:</strong> {signupData.country || "N/A"}</p>
-          <p><strong>ABC Membership:</strong> {signupData.abcMembership === "yes" ? "Yes" : "No"}</p>
+          <p><strong>ABC Membership:</strong> {signupData.isAbcMember ? "Yes" : "No"}</p>
         </div>
 
         <div className="border p-6 rounded-lg shadow-sm">

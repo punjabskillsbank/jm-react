@@ -1,26 +1,23 @@
 // src/AppRoutes.tsx
 import { Routes, Route } from "react-router-dom";
 import "../index.css";
-import Step1 from "../Pages/Freelancer/Step01_Client-Freelancer";
-import Step2 from "../Pages/Freelancer/Step02_SignupData";
-import Step3 from "../Pages/Freelancer/Step03_Get_Started";
-import Step4 from "../Pages/Freelancer/Step04_Experience";
-import Step5 from "../Pages/Freelancer/Step05_Goal";
-import Step6 from "../Pages/Freelancer/Step06_Work_Preference";
-import Step7 from "../Pages/Freelancer/Step07_Create_Y_P";
-import Step8 from "../Pages/Freelancer/Step08_Work_Category";
-import Step9 from "../Pages/Freelancer/Step09_Title";
-import Step10 from "../Pages/Freelancer/Step10_Skills";
-import Step11 from "../Pages/Freelancer/Step11_Work_Experience";
-import Step12 from "../Pages/Freelancer/Step12_Education";
-import Step13 from "../Pages/Freelancer/Step13_ABC_Member";
-import Step14 from "../Pages/Freelancer/Step14_Bio";
-import Step15 from "../Pages/Freelancer/Step15_Hourly_Rate";
-import Step16 from "../Pages/Freelancer/Step16_Details";
-import ProfileReview from "../Pages/Freelancer/ProfileReview";
+import Step1 from "../pages/Freelancer/Signup/Step01_Client-Freelancer";
+import Step2 from "../pages/Freelancer/Signup/Step02_Get_Started";
+import Step3 from "../pages/Freelancer/Signup/Step03_Experience";
+import Step4 from "../pages/Freelancer/Signup/Step04_Work_Preference";
+import Step5 from "../pages/Freelancer/Signup/Step05_Create_Your_Profile";
+import Step6 from "../pages/Freelancer/Signup/Step06_Work_Category";
+import Step7 from "../pages/Freelancer/Signup/Step07_Title";
+import Step8 from "../pages/Freelancer/Signup/Step08_Skills";
+import Step9 from "../pages/Freelancer/Signup/Step09_Work_Experience";
+import Step10 from "../pages/Freelancer/Signup/Step10_Education";
+import Step11 from "../pages/Freelancer/Signup/Step11_ABC_Member";
+import Step12 from "../pages/Freelancer/Signup/Step12_Bio";
+import Step13 from "../pages/Freelancer/Signup/Step13_Details";
+import ProfileReview from "../pages/Freelancer/Profile/ProfileReview";
 import Dashboard from "../Home/Dashboard";
 import Landing from "../Home/Landing";
-import ClientJobPost from "../Pages/Client/ClientJobPost";
+import ClientJobPost from "../pages/Client/ClientJobPost";
 
 const AppRoutes = () => {
   return (
@@ -39,9 +36,6 @@ const AppRoutes = () => {
       <Route path="/signup/step11" element={<Step11 />} />
       <Route path="/signup/step12" element={<Step12 />} />
       <Route path="/signup/step13" element={<Step13 />} />
-      <Route path="/signup/step14" element={<Step14 />} />
-      <Route path="/signup/step15" element={<Step15 />} />
-      <Route path="/signup/step16" element={<Step16 />} />
       <Route path="/signup/profile-review" element={<ProfileReview />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/client/post-job" element={<ClientJobPost />} />

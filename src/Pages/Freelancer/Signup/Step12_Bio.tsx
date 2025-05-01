@@ -2,15 +2,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSignup } from "./SignupContext";
 
-const Step14 = () => {
+const Step12 = () => {
   const { signupData, updateSignupData } = useSignup();
   const navigate = useNavigate();
   const [bio, setBio] = useState<string>(typeof signupData.bio === "string" ? signupData.bio : "");
-  const minCharacters = 100;
+  const minCharacters = 500;
 
   const handleNext = () => {
     updateSignupData({ bio });
-    navigate("/signup/step15");
+    navigate("/signup/step13");
   };
 
   return (
@@ -33,7 +33,7 @@ const Step14 = () => {
 
       <div className="flex justify-between mt-6">
         <button
-          onClick={() => navigate("/signup/step13")}
+          onClick={() => navigate("/signup/step11")}
           className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"  >
           Back
         </button>
@@ -51,4 +51,4 @@ const Step14 = () => {
   );
 };
 
-export default Step14;
+export default Step12;

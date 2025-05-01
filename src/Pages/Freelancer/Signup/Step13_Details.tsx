@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSignup } from "./SignupContext";
 
-const Step16 = () => {
+const Step13 = () => {
   const { signupData, updateSignupData } = useSignup();
   const navigate = useNavigate();
 
@@ -114,7 +114,7 @@ const Step16 = () => {
           {errors.state && <p className="text-red-500 text-sm">{errors.state}</p>}
         </div>
         <div className="mb-4">
-          <label className="block font-semibold">ZIP/Postal Code</label>
+          <label className="block font-semibold">Postal Code</label>
           <input
             type="text"
             value={zip}
@@ -136,7 +136,7 @@ const Step16 = () => {
       </div>
       <div className="flex justify-between mt-6">
         <button
-          onClick={() => navigate("/signup/step15")}
+          onClick={() => navigate("/signup/step12")}
           className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400">
           Back
         </button>
@@ -151,4 +151,4 @@ const Step16 = () => {
   );
 };
 
-export default Step16;
+export default Step13;

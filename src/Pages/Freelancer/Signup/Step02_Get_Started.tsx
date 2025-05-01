@@ -1,13 +1,13 @@
 import { useSignup } from "./SignupContext";
 import { useNavigate } from "react-router-dom";
 
-const Step3 = () => {
+const Step2 = () => {
   const { signupData } = useSignup(); 
   const username = signupData.firstName || "User"; // Fallback if name is missing
   const navigate = useNavigate(); // Navigation hook
 
   const handleNext = () => {
-    navigate("/signup/step4");
+    navigate("/signup/step3");
   };
 
   return (
@@ -28,4 +28,4 @@ const Step3 = () => {
   );
 };
 
-export default Step3;
+export default Step2;
