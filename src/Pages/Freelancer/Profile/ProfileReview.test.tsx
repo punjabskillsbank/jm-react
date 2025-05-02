@@ -4,14 +4,15 @@ import ProfileReview from "./ProfileReview";
 import { useSignup } from "../Signup/SignupContext";
 import { BrowserRouter } from "react-router-dom";
 import axios from "axios";
+import { jest } from "@jest/globals";
 
-// Mocks
+// Mock axios and useNavigate
 jest.mock("axios");
 jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+  ...(jest.requireActual("react-router-dom") as object),
   useNavigate: () => jest.fn(),
 }));
-jest.mock("./src/context/SignupContext", () => ({
+jest.mock("../Signup/SignupContext", () => ({
   useSignup: jest.fn(),
 }));
 
@@ -20,7 +21,7 @@ beforeAll(() => {
   window.alert = jest.fn();
 });
 
-// Helpers
+// Sample signup data for testing
 const mockSignupData = {
   title: "Frontend Developer",
   bio: "Experienced with React and TypeScript.",
@@ -36,19 +37,25 @@ const mockSignupData = {
   photo: null,
 };
 
-const renderComponent = () => render(
-  <BrowserRouter>
-    <ProfileReview />
-  </BrowserRouter>
-);
+// Render component with router context
+const renderComponent = () =>
+  render(
+    <BrowserRouter>
+      <ProfileReview />
+    </BrowserRouter>
+  );
 
-// Tests
 describe("ProfileReview Page", () => {
   beforeEach(() => {
+    // Mock signup context
     (useSignup as jest.Mock).mockReturnValue({ signupData: mockSignupData });
 
+    // Mock localStorage and axios
     localStorage.setItem("user_id", "freelancer-id-1");
-    (axios.post as jest.Mock).mockResolvedValue({ data: { message: "Success" } });
+
+    (axios.post as jest.MockedFunction<typeof axios.post>).mockResolvedValue({
+      data: { message: "Success" },
+    });
   });
 
   afterEach(() => {

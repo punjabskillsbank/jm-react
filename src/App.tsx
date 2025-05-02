@@ -1,7 +1,7 @@
 // src/App.tsx
 import { BrowserRouter as Router } from "react-router-dom";
 import { useEffect } from "react";
-import { AuthProvider } from "../src/Pages/Client/AuthContext"; 
+import { AuthProvider } from "../src/pages/Client/AuthContext"; 
 import { SignupProvider } from "./pages/Freelancer/Signup/SignupContext";
 import AppRoutes from "./router/AppRoutes";
 import './index.css';
