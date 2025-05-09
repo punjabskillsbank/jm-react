@@ -1,19 +1,18 @@
-import React from 'react';
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSignup } from "./SignupContext";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useSignup } from './SignupContext';
 
 const Step13 = () => {
   const { signupData, updateSignupData } = useSignup();
   const navigate = useNavigate();
 
-  const [dob, setDob] = useState<string>(typeof signupData.dob === "string" ? signupData.dob : "");
-  const [country, setCountry] = useState(signupData.country || "India");
-  const [address, setAddress] = useState(signupData.address || "");
-  const [city, setCity] = useState(signupData.city || "");
-  const [state, setState] = useState(signupData.state || "");
-  const [zip, setZip] = useState(signupData.zip || "");
-  const [phone, setPhone] = useState(signupData.phone || "");
+  const [dob, setDob] = useState<string>(typeof signupData.dob === 'string' ? signupData.dob : '');
+  const [country, setCountry] = useState(signupData.country || '');
+  const [address, setAddress] = useState(signupData.address || '');
+  const [city, setCity] = useState(signupData.city || '');
+  const [state, setState] = useState(signupData.state || '');
+  const [zip, setZip] = useState(signupData.zip || '');
+  const [phone, setPhone] = useState(signupData.phone || '');
   const [photo, setPhoto] = useState<File | null>(null);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
@@ -25,15 +24,15 @@ const Step13 = () => {
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
-    if (!dob) newErrors.dob = "Date of birth is required";
-    if (!country) newErrors.country = "Country is required";
-    if (!address) newErrors.address = "Street address is required";
-    if (!city) newErrors.city = "City is required";
-    if (!state) newErrors.state = "State/Province is required";
-    if (!zip) newErrors.zip = "ZIP/Postal Code is required";
-    if (!phone) newErrors.phone = "Phone number is required";
-    if (!photo) newErrors.photo = "Profile photo is required";
-    
+    if (!dob) newErrors.dob = 'Date of birth is required';
+    if (!country) newErrors.country = 'Country is required';
+    if (!address) newErrors.address = 'Street address is required';
+    if (!city) newErrors.city = 'City is required';
+    if (!state) newErrors.state = 'State/Province is required';
+    if (!zip) newErrors.zip = 'ZIP/Postal Code is required';
+    if (!phone) newErrors.phone = 'Phone number is required';
+    if (!photo) newErrors.photo = 'Profile photo is required';
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -41,7 +40,7 @@ const Step13 = () => {
   const handleNext = () => {
     if (validateForm()) {
       updateSignupData({ dob, country, address, city, state, zip, phone, photo });
-      navigate("/signup/profile-review");
+      navigate('/signup/profile-review');
     }
   };
 
@@ -52,9 +51,12 @@ const Step13 = () => {
         A professional photo helps build trust. We also need your details for secure transactions.
       </p>
       <div className="mb-4">
-        <label className="block font-semibold">Upload Photo</label>
+        <label htmlFor="photo" className="block font-semibold">
+          Upload Photo
+        </label>
         <input
           type="file"
+          id="photo"
           accept="image/*"
           onChange={handlePhotoChange}
           className="w-full p-2 border rounded-md"
@@ -62,9 +64,12 @@ const Step13 = () => {
         {errors.photo && <p className="text-red-500 text-sm">{errors.photo}</p>}
       </div>
       <div className="mb-4">
-        <label className="block font-semibold">Date of Birth</label>
+        <label htmlFor="dob" className="block font-semibold">
+          Date of Birth
+        </label>
         <input
           type="date"
+          id="dob"
           value={dob}
           onChange={(e) => setDob(e.target.value)}
           className="w-full p-2 border rounded-md"
@@ -72,9 +77,12 @@ const Step13 = () => {
         {errors.dob && <p className="text-red-500 text-sm">{errors.dob}</p>}
       </div>
       <div className="mb-4">
-        <label className="block font-semibold">Country</label>
+        <label htmlFor="country" className="block font-semibold">
+          Country
+        </label>
         <input
           type="text"
+          id="country"
           value={country}
           onChange={(e) => setCountry(e.target.value)}
           className="w-full p-2 border rounded-md"
@@ -83,9 +91,12 @@ const Step13 = () => {
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="mb-4">
-          <label className="block font-semibold">Street Address</label>
+          <label htmlFor="address" className="block font-semibold">
+            Street Address
+          </label>
           <input
             type="text"
+            id="address"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             className="w-full p-2 border rounded-md"
@@ -93,9 +104,12 @@ const Step13 = () => {
           {errors.address && <p className="text-red-500 text-sm">{errors.address}</p>}
         </div>
         <div className="mb-4">
-          <label className="block font-semibold">City</label>
+          <label htmlFor="city" className="block font-semibold">
+            City
+          </label>
           <input
             type="text"
+            id="city"
             value={city}
             onChange={(e) => setCity(e.target.value)}
             className="w-full p-2 border rounded-md"
@@ -105,9 +119,12 @@ const Step13 = () => {
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div className="mb-4">
-          <label className="block font-semibold">State/Province</label>
+          <label htmlFor="state" className="block font-semibold">
+            State/Province
+          </label>
           <input
             type="text"
+            id="state"
             value={state}
             onChange={(e) => setState(e.target.value)}
             className="w-full p-2 border rounded-md"
@@ -115,9 +132,12 @@ const Step13 = () => {
           {errors.state && <p className="text-red-500 text-sm">{errors.state}</p>}
         </div>
         <div className="mb-4">
-          <label className="block font-semibold">Postal Code</label>
+          <label htmlFor="zip" className="block font-semibold">
+            Postal Code
+          </label>
           <input
             type="text"
+            id="zip"
             value={zip}
             onChange={(e) => setZip(e.target.value)}
             className="w-full p-2 border rounded-md"
@@ -126,9 +146,12 @@ const Step13 = () => {
         </div>
       </div>
       <div className="mb-4">
-        <label className="block font-semibold">Phone Number</label>
+        <label htmlFor="phone" className="block font-semibold">
+          Phone Number
+        </label>
         <input
           type="tel"
+          id="phone"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           className="w-full p-2 border rounded-md"
@@ -137,14 +160,16 @@ const Step13 = () => {
       </div>
       <div className="flex justify-between mt-6">
         <button
-          onClick={() => navigate("/signup/step12")}
-          className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400">
+          onClick={() => navigate('/signup/step12')}
+          className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
+        >
           Back
         </button>
 
         <button
           onClick={handleNext}
-          className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+          className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+        >
           Review Your Profile
         </button>
       </div>
