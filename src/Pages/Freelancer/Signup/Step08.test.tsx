@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { useSignup } from "./SignupContext";
 import Step8 from "./Step08_Skills";
+import '@testing-library/jest-dom';
 
 jest.mock("./SignupContext", () => ({
     useSignup: jest.fn(),

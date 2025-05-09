@@ -1,6 +1,8 @@
+import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import Step12 from "./Step12_Bio";
+
 
 jest.mock("./SignupContext", () => ({
     useSignup: jest.fn(),

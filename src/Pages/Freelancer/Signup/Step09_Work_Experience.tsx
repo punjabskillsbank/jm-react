@@ -72,24 +72,27 @@ const Step9 = () => {
       {experiences.map((exp, index) => (
         <div key={index} className="border p-4 rounded-md mb-6 bg-gray-50">
           <div className="mb-3">
-            <label className="block font-semibold">Title</label>
+            <label htmlFor={`title-${index}`} className="block font-semibold">Title</label>
             <input
+              id={`title-${index}`}
               value={exp.title}
               onChange={(e) => handleChange(index, "title", e.target.value)}
               className="w-full p-2 border rounded"
             />
           </div>
           <div className="mb-3">
-            <label className="block font-semibold">Description</label>
+            <label htmlFor={`description-${index}`} className="block font-semibold">Description</label>
             <textarea
+              id={`description-${index}`}
               value={exp.description}
               onChange={(e) => handleChange(index, "description", e.target.value)}
               className="w-full p-2 border rounded"
             />
           </div>
           <div className="mb-3">
-            <label className="block font-semibold">Budget Type</label>
+            <label htmlFor={`budget_type-${index}`} className="block font-semibold">Budget Type</label>
             <select
+              id={`budget_type-${index}`}
               value={exp.budget_type}
               onChange={(e) => handleChange(index, "budget_type", e.target.value as Experience["budget_type"])}
               className="w-full p-2 border rounded"
@@ -100,8 +103,9 @@ const Step9 = () => {
           </div>
           {exp.budget_type === "fixed" ? (
             <div className="mb-3">
-              <label className="block font-semibold">Fixed Price</label>
+              <label htmlFor={`fixed_price-${index}`} className="block font-semibold">Fixed Price</label>
               <input
+                id={`fixed_price-${index}`}
                 type="number"
                 value={exp.fixed_price}
                 onChange={(e) => handleChange(index, "fixed_price", e.target.value)}
@@ -111,8 +115,9 @@ const Step9 = () => {
           ) : (
             <div className="flex gap-3 mb-3">
               <div className="flex-1">
-                <label className="block font-semibold">Hourly Min Rate</label>
+                <label htmlFor={`hourly_min_rate-${index}`} className="block font-semibold">Hourly Min Rate</label>
                 <input
+                  id={`hourly_min_rate-${index}`}
                   type="number"
                   value={exp.hourly_min_rate}
                   onChange={(e) => handleChange(index, "hourly_min_rate", e.target.value)}
@@ -120,8 +125,9 @@ const Step9 = () => {
                 />
               </div>
               <div className="flex-1">
-                <label className="block font-semibold">Hourly Max Rate</label>
+                <label htmlFor={`hourly_max_rate-${index}`} className="block font-semibold">Hourly Max Rate</label>
                 <input
+                  id={`hourly_max_rate-${index}`}
                   type="number"
                   value={exp.hourly_max_rate}
                   onChange={(e) => handleChange(index, "hourly_max_rate", e.target.value)}
@@ -131,16 +137,18 @@ const Step9 = () => {
             </div>
           )}
           <div className="mb-3">
-            <label className="block font-semibold">Project Duration</label>
+            <label htmlFor={`project_duration-${index}`} className="block font-semibold">Project Duration</label>
             <input
+              id={`project_duration-${index}`}
               value={exp.project_duration}
               onChange={(e) => handleChange(index, "project_duration", e.target.value)}
               className="w-full p-2 border rounded"
             />
           </div>
           <div className="mb-3">
-            <label className="block font-semibold">Experience Level</label>
+            <label htmlFor={`experience_level-${index}`} className="block font-semibold">Experience Level</label>
             <select
+              id={`experience_level-${index}`}
               value={exp.experience_level}
               onChange={(e) => handleChange(index, "experience_level", e.target.value as Experience["experience_level"])}
               className="w-full p-2 border rounded"

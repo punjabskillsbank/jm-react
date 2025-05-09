@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import Step10_Education from './Step10_Education';
+import '@testing-library/jest-dom';
 
 describe('Step10_Education Component', () => {
     it('renders the component correctly', () => {

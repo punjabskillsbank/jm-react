@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { render, screen, fireEvent } from "@testing-library/react";
+import '@testing-library/jest-dom';
 import { MemoryRouter } from "react-router-dom";
 import { useSignup } from "./SignupContext";
 import Step13 from "./Step13_Details";
+import React from "react";
 
 jest.mock("./SignupContext", () => ({
     useSignup: jest.fn(),

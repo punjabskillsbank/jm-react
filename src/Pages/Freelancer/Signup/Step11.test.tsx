@@ -1,115 +1,117 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+
+import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { useSignup } from "./SignupContext";
 import Step11 from "./Step11_ABC_Member";
 
+// Mock update function
+const mockUpdateSignupData = jest.fn();
+
+// Mock context hook
 jest.mock("./SignupContext", () => ({
-    useSignup: jest.fn(),
+  useSignup: () => ({
+    signupData: { abcMembership: "" },
+    updateSignupData: mockUpdateSignupData,
+  }),
 }));
 
+// Mock react-router-dom's useNavigate
+const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
-    useNavigate: jest.fn(),
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigate,
 }));
 
 describe("Step11 Component", () => {
-    const mockNavigate = jest.fn();
-    const mockUpdateSignupData = jest.fn();
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-        (useSignup as jest.Mock).mockReturnValue({
-            signupData: { abcMembership: "" },
-            updateSignupData: mockUpdateSignupData,
-        });
-        (require("react-router-dom").useNavigate as jest.Mock).mockReturnValue(mockNavigate);
-    });
+  it("renders all expected elements", () => {
+    render(
+      <MemoryRouter>
+        <Step11 />
+      </MemoryRouter>
+    );
 
-    it("renders the component correctly", () => {
-        render(
-            <MemoryRouter>
-                <Step11 />
-            </MemoryRouter>
-        );
+    expect(screen.getByText("7/10 - Are you an ABC Member?")).toBeInTheDocument();
+    expect(screen.getByLabelText("Yes, I am an ABC Member")).toBeInTheDocument();
+    expect(screen.getByLabelText("No, I want to join")).toBeInTheDocument();
+    expect(screen.getByText("Back")).toBeInTheDocument();
+    expect(screen.getByText("Next, Add Overview")).toBeInTheDocument();
+  });
 
-        expect(screen.getByText("7/10 - Are you an ABC Member?")).toBeInTheDocument();
-        expect(screen.getByText("Yes, I am an ABC Member")).toBeInTheDocument();
-        expect(screen.getByText("No, I want to join")).toBeInTheDocument();
-        expect(screen.getByText("Back")).toBeInTheDocument();
-        expect(screen.getByText("Next, Add Overview")).toBeInTheDocument();
-    });
+  it("handles radio selection correctly", () => {
+    render(
+      <MemoryRouter>
+        <Step11 />
+      </MemoryRouter>
+    );
 
-    it("handles radio button selection", () => {
-        render(
-            <MemoryRouter>
-                <Step11 />
-            </MemoryRouter>
-        );
+    const yesRadio = screen.getByLabelText("Yes, I am an ABC Member");
+    const noRadio = screen.getByLabelText("No, I want to join");
 
-        const yesRadio = screen.getByLabelText("Yes, I am an ABC Member");
-        const noRadio = screen.getByLabelText("No, I want to join");
+    fireEvent.click(yesRadio);
+    expect(yesRadio).toBeChecked();
+    expect(noRadio).not.toBeChecked();
 
-        fireEvent.click(yesRadio);
-        expect(yesRadio).toBeChecked();
-        expect(noRadio).not.toBeChecked();
+    fireEvent.click(noRadio);
+    expect(noRadio).toBeChecked();
+    expect(yesRadio).not.toBeChecked();
+  });
 
-        fireEvent.click(noRadio);
-        expect(noRadio).toBeChecked();
-        expect(yesRadio).not.toBeChecked();
-    });
+  it("disables Next button when no selection is made", () => {
+    render(
+      <MemoryRouter>
+        <Step11 />
+      </MemoryRouter>
+    );
 
-    it("disables the Next button when no option is selected", () => {
-        render(
-            <MemoryRouter>
-                <Step11 />
-            </MemoryRouter>
-        );
+    const nextButton = screen.getByText("Next, Add Overview");
+    expect(nextButton).toBeDisabled();
+  });
 
-        const nextButton = screen.getByText("Next, Add Overview");
-        expect(nextButton).toBeDisabled();
-    });
+  it("enables Next button after selection", () => {
+    render(
+      <MemoryRouter>
+        <Step11 />
+      </MemoryRouter>
+    );
 
-    it("enables the Next button when an option is selected", () => {
-        render(
-            <MemoryRouter>
-                <Step11 />
-            </MemoryRouter>
-        );
+    const yesRadio = screen.getByLabelText("Yes, I am an ABC Member");
+    const nextButton = screen.getByText("Next, Add Overview");
 
-        const yesRadio = screen.getByLabelText("Yes, I am an ABC Member");
-        const nextButton = screen.getByText("Next, Add Overview");
+    fireEvent.click(yesRadio);
+    expect(nextButton).not.toBeDisabled();
+  });
 
-        fireEvent.click(yesRadio);
-        expect(nextButton).not.toBeDisabled();
-    });
+  it("goes back on Back button click", () => {
+    render(
+      <MemoryRouter>
+        <Step11 />
+      </MemoryRouter>
+    );
 
-    it("navigates to the previous step when Back button is clicked", () => {
-        render(
-            <MemoryRouter>
-                <Step11 />
-            </MemoryRouter>
-        );
+    const backButton = screen.getByText("Back");
+    fireEvent.click(backButton);
 
-        const backButton = screen.getByText("Back");
-        fireEvent.click(backButton);
+    expect(mockNavigate).toHaveBeenCalledWith("/signup/step10");
+  });
 
-        expect(mockNavigate).toHaveBeenCalledWith("/signup/step10");
-    });
+  it("saves data and proceeds on Next button click", () => {
+    render(
+      <MemoryRouter>
+        <Step11 />
+      </MemoryRouter>
+    );
 
-    it("updates signup data and navigates to the next step when Next button is clicked", () => {
-        render(
-            <MemoryRouter>
-                <Step11 />
-            </MemoryRouter>
-        );
+    const yesRadio = screen.getByLabelText("Yes, I am an ABC Member");
+    const nextButton = screen.getByText("Next, Add Overview");
 
-        const yesRadio = screen.getByLabelText("Yes, I am an ABC Member");
-        const nextButton = screen.getByText("Next, Add Overview");
+    fireEvent.click(yesRadio);
+    fireEvent.click(nextButton);
 
-        fireEvent.click(yesRadio);
-        fireEvent.click(nextButton);
-
-        expect(mockUpdateSignupData).toHaveBeenCalledWith({ abcMembership: "yes" });
-        expect(mockNavigate).toHaveBeenCalledWith("/signup/step12");
-    });
+    expect(mockUpdateSignupData).toHaveBeenCalledWith({ abcMembership: "yes" });
+    expect(mockNavigate).toHaveBeenCalledWith("/signup/step12");
+  });
 });
