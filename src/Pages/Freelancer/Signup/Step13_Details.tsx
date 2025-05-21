@@ -17,8 +17,25 @@ const Step13 = () => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setPhoto(e.target.files[0]);
+    const file = e.target.files?.[0];
+    if (file) {
+      const allowedTypes = ['image/jpeg', 'image/png'];
+      const maxSize = 10 * 1024 * 1024; // 10MB
+
+      if (!allowedTypes.includes(file.type)) {
+        setErrors((prev) => ({ ...prev, photo: 'Only JPG and PNG formats are allowed' }));
+        setPhoto(null);
+        return;
+      }
+
+      if (file.size > maxSize) {
+        setErrors((prev) => ({ ...prev, photo: 'File size must be less than 10MB' }));
+        setPhoto(null);
+        return;
+      }
+
+      setErrors((prev) => ({ ...prev, photo: '' }));
+      setPhoto(file);
     }
   };
 
@@ -46,23 +63,11 @@ const Step13 = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-4 text-center">10/10 - Final Details</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">9/10 - Final Details</h2>
       <p className="text-gray-600 text-center mb-6">
         A professional photo helps build trust. We also need your details for secure transactions.
       </p>
-      <div className="mb-4">
-        <label htmlFor="photo" className="block font-semibold">
-          Upload Photo
-        </label>
-        <input
-          type="file"
-          id="photo"
-          accept="image/*"
-          onChange={handlePhotoChange}
-          className="w-full p-2 border rounded-md"
-        />
-        {errors.photo && <p className="text-red-500 text-sm">{errors.photo}</p>}
-      </div>
+
       <div className="mb-4">
         <label htmlFor="dob" className="block font-semibold">
           Date of Birth
@@ -76,6 +81,24 @@ const Step13 = () => {
         />
         {errors.dob && <p className="text-red-500 text-sm">{errors.dob}</p>}
       </div>
+     
+      <div className="mb-4">
+        <label htmlFor="photo" className="block font-semibold">
+           Upload Photo
+         </label>
+        <input
+          type="file"
+          id="photo"
+          accept="image/jpeg, image/png"
+          onChange={handlePhotoChange}
+          className="w-full p-2 border rounded-md"
+        />
+        <p className="text-red-500 text-sm mt-1">
+        Accepted formats: JPG, PNG. Max file size: 10MB.
+        </p>
+          {errors.photo && <p className="text-red-500 text-sm">{errors.photo}</p>}
+      </div>
+
       <div className="mb-4">
         <label htmlFor="country" className="block font-semibold">
           Country
@@ -165,7 +188,6 @@ const Step13 = () => {
         >
           Back
         </button>
-
         <button
           onClick={handleNext}
           className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"

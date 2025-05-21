@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSignup } from "./SignupContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 interface EducationEntry {
   institute: string;
@@ -122,7 +124,7 @@ const Step10 = () => {
         onClick={addEducation}
         className="mb-6 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
       >
-        + Add Another Education
+        <FontAwesomeIcon icon={faPlus} />  Add Another Education
       </button>
 
       <div className="flex justify-between mt-6">

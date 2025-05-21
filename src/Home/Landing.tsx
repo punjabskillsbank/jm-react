@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Menu, X } from "lucide-react"; 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -70,7 +72,7 @@ const Landing = () => {
             onClick={() => navigate("/client/post-job")}
             className="w-full bg-blue-600 text-white text-lg py-3 rounded hover:bg-blue-700"
           >
-            ➕ Post a Job
+            <FontAwesomeIcon icon={faPlus} /> Post a Job
           </button>
         </div>
       </main>

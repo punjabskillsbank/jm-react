@@ -1,12 +1,13 @@
 import React from "react";
 import { useSignup } from "../pages/Freelancer/Signup/SignupContext";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAddressCard, faChartSimple, faCheck } from "@fortawesome/free-solid-svg-icons";
 const Dashboard = () => {
   const { signupData } = useSignup();
 
   return (
     <div style={{ maxWidth: "800px", margin: "auto", padding: "20px", textAlign: "center" }}>
-      <h1>📊 Your Profile Summary</h1>
+      <h1><FontAwesomeIcon icon={faChartSimple} /><FontAwesomeIcon icon={faAddressCard} /> Your Profile Summary</h1>
 
       <div style={{ textAlign: "left", padding: "20px", border: "1px solid #ddd", borderRadius: "8px", background: "#f9f9f9" }}>
         <h3><FontAwesomeIcon icon="user" className="text-blue-600 mr-2" /> Personal Details</h3>
@@ -25,7 +26,7 @@ const Dashboard = () => {
         <p><strong>Selected Work Categories:</strong> {Array.isArray(signupData.workCategories) ? signupData.workCategories.join(", ") : "Not selected"}</p>
       </div>
 
-      <button onClick={() => alert("Profile Submitted! ")} style={buttonStyle}>Submit Profile ✅</button>
+      <button onClick={() => alert("Profile Submitted! ")} style={buttonStyle}>Submit Profile <FontAwesomeIcon icon={faCheck} /></button>
     </div>
   );
 };

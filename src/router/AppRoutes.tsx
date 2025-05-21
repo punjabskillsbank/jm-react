@@ -17,7 +17,7 @@ import Step13 from "../pages/Freelancer/Signup/Step13_Details";
 import ProfileReview from "../pages/Freelancer/Profile/ProfileReview";
 import Dashboard from "../Home/Dashboard";
 import Landing from "../Home/Landing";
-import ClientJobPost from "../pages/Client/ClientJobPost";
+//import ClientJobPost from "../pages/Client/ClientJobPost";
 
 const AppRoutes = () => {
   return (
@@ -38,7 +38,8 @@ const AppRoutes = () => {
       <Route path="/signup/step13" element={<Step13 />} />
       <Route path="/signup/profile-review" element={<ProfileReview />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/client/post-job" element={<ClientJobPost />} />
+      {/* <Route path="/client/job-post" element={<ClientJobPost />} /> */}
+  
       <Route path="*" element={<h1>404 Not Found</h1>} />
   
     </Routes>
