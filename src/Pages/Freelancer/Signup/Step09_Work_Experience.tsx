@@ -179,7 +179,7 @@ const Step9 = () => {
 
       <div className="flex justify-between mt-6">
         <button
-          onClick={() => navigate("/signup/step10")}
+          onClick={() => navigate("/signup/step8")}
           className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
         >
           Back
@@ -187,7 +187,7 @@ const Step9 = () => {
 
         <div className="flex gap-4">
           <button
-            onClick={() => navigate("/signup/step8")}
+            onClick={() => navigate("/signup/step10")}
             className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
           >
             Skip for Now
