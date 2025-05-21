@@ -46,9 +46,8 @@ const ProfileReview = () => {
         timezone: timezone
       };
 
-      console.log("Payload sent to backend:", payload);
 
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:8081/api/freelancer/create_profile",
         payload,
         {
@@ -58,7 +57,6 @@ const ProfileReview = () => {
         }
       );
 
-      console.log("Profile created:", response.data);
       alert("Profile published successfully!");
       navigate("/dashboard");
     } catch (error) {
