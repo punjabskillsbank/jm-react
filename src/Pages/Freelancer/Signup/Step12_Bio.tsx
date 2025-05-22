@@ -37,7 +37,7 @@ const Step12 = () => {
           onClick={handleNext}
           className="px-4 py-2 rounded-md text-white bg-green-500 hover:bg-green-600"
         >
-          Next, Add Your Rate
+          Next
         </button>
       </div>
     </div>
