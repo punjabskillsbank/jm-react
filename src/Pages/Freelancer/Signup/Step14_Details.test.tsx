@@ -2,8 +2,8 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter, useNavigate } from 'react-router-dom';
 import { useSignup } from './SignupContext';
-import Step13 from './Step13_Details';
-import React from 'react';
+import Step14 from './Step14_Details';
+
 
 jest.mock('./SignupContext', () => ({
   useSignup: jest.fn(),
@@ -14,7 +14,7 @@ jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
 }));
 
-describe('Step13 Component', () => {
+describe('Step14 Component', () => {
   const mockNavigate = jest.fn();
   const mockUpdateSignupData = jest.fn();
 
@@ -38,7 +38,7 @@ describe('Step13 Component', () => {
   it('renders the component correctly', () => {
     render(
       <MemoryRouter>
-        <Step13 />
+        <Step14 />
       </MemoryRouter>
     );
 
@@ -51,7 +51,7 @@ describe('Step13 Component', () => {
   it('validates the form and shows errors when fields are empty', () => {
     render(
       <MemoryRouter>
-        <Step13 />
+        <Step14 />
       </MemoryRouter>
     );
 

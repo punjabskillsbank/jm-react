@@ -66,7 +66,7 @@ describe("ProfileReview Page", () => {
   test("renders profile review content", () => {
     renderComponent();
 
-    expect(screen.getByText("🎉 Profile Review")).toBeInTheDocument();
+    expect(screen.getByText("Profile Review")).toBeInTheDocument();
     expect(screen.getByText(/Frontend Developer/i)).toBeInTheDocument();
     expect(screen.getByText(/India/i)).toBeInTheDocument();
     expect(screen.getByText(/30/)).toBeInTheDocument();

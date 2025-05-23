@@ -10,10 +10,11 @@ import Step6 from "../pages/Freelancer/Signup/Step06_Work_Category";
 import Step7 from "../pages/Freelancer/Signup/Step07_Title";
 import Step8 from "../pages/Freelancer/Signup/Step08_Skills";
 import Step9 from "../pages/Freelancer/Signup/Step09_Work_Experience";
-import Step10 from "../pages/Freelancer/Signup/Step10_Education";
-import Step11 from "../pages/Freelancer/Signup/Step11_ABC_Member";
-import Step12 from "../pages/Freelancer/Signup/Step12_Bio";
-import Step13 from "../pages/Freelancer/Signup/Step13_Details";
+import Step10 from "../pages/Freelancer/Signup/Step10_Hourly_Rate";
+import Step11 from "../pages/Freelancer/Signup/Step11_Education";
+import Step12 from "../pages/Freelancer/Signup/Step12_ABC_Member";
+import Step13 from "../pages/Freelancer/Signup/Step13_Bio";
+import Step14 from "../pages/Freelancer/Signup/Step14_Details";
 import ProfileReview from "../pages/Freelancer/Profile/ProfileReview";
 import Dashboard from "../Home/Dashboard";
 import Landing from "../Home/Landing";
@@ -36,6 +37,7 @@ const AppRoutes = () => {
       <Route path="/signup/step11" element={<Step11 />} />
       <Route path="/signup/step12" element={<Step12 />} />
       <Route path="/signup/step13" element={<Step13 />} />
+      <Route path="/signup/step14" element={<Step14 />} />
       <Route path="/signup/profile-review" element={<ProfileReview />} />
       <Route path="/dashboard" element={<Dashboard />} />
       {/* <Route path="/client/job-post" element={<ClientJobPost />} /> */}

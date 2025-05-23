@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSignup } from "./SignupContext";
 
-const Step11 = () => {
+const Step12 = () => {
   const { signupData, updateSignupData } = useSignup();
   const navigate = useNavigate();
   const [abcMembership, setAbcMembership] = useState(signupData.abcMembership || "");
@@ -13,12 +13,12 @@ const Step11 = () => {
 
   const handleNext = () => {
     updateSignupData({ abcMembership });
-    navigate("/signup/step12");
+    navigate("/signup/step13");
   };
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-4 text-center">7/10 - Are you an ABC Member?</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">8/10 - Are you an ABC Member?</h2>
       <p className="text-gray-600 text-center mb-6">
         Some clients prefer working with ABC members. Let us know if you are one.
       </p>
@@ -51,7 +51,7 @@ const Step11 = () => {
 
       <div className="flex justify-between mt-6">
         <button
-          onClick={() => navigate("/signup/step10")}
+          onClick={() => navigate("/signup/step11")}
           className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400" >
           Back
         </button>
@@ -69,4 +69,4 @@ const Step11 = () => {
   );
 };
 
-export default Step11;
+export default Step12;

@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, useNavigate } from 'react-router-dom';
-import Step10 from './Step10_Education';
+import Step11 from './Step11_Education';
 import { useSignup } from './SignupContext';
 
 // Mock context and navigation
@@ -14,7 +14,7 @@ jest.mock('react-router-dom', () => ({
 useNavigate: jest.fn(),
 }));
 
-describe('Step10_Education Component', () => {
+describe('Step11_Education Component', () => {
 const mockNavigate = jest.fn();
 const mockUpdateSignupData = jest.fn();
 
@@ -30,12 +30,12 @@ updateSignupData: mockUpdateSignupData,
 it('renders the component with all form fields', () => {
 render(
 <MemoryRouter>
-<Step10 />
+<Step11 />
 </MemoryRouter>
 );
 
 
-expect(screen.getByText('6/10')).toBeInTheDocument();
+expect(screen.getByText('7/10')).toBeInTheDocument();
 expect(screen.getByText('Add Your Education')).toBeInTheDocument();
 expect(screen.getByText(/schools, colleges, or institutions/i)).toBeInTheDocument();
 
@@ -55,7 +55,7 @@ expect(descriptionInput).toBeInTheDocument();
 it('updates fields when user types into inputs', () => {
 render(
 <MemoryRouter>
-<Step10 />
+<Step11 />
 </MemoryRouter>
 );
 
@@ -78,12 +78,12 @@ expect(screen.getByLabelText(/Description/i)).toHaveValue('Studied Engineering')
 it('adds another education entry when "+ Add Another Education" is clicked', () => {
 render(
 <MemoryRouter>
-<Step10 />
+<Step11 />
 </MemoryRouter>
 );
 
 
-fireEvent.click(screen.getByText(/\+ Add Another Education/i));
+fireEvent.click(screen.getByText(/Add Another Education/i));
 const allInstituteFields = screen.getAllByLabelText(/Institute/i);
 expect(allInstituteFields.length).toBe(2);
 });
@@ -91,11 +91,11 @@ expect(allInstituteFields.length).toBe(2);
 it('removes an education entry when "Remove This Education" is clicked', () => {
 render(
 <MemoryRouter>
-<Step10 />
+<Step11 />
 </MemoryRouter>
 );
 
-fireEvent.click(screen.getByText(/\+ Add Another Education/i));
+fireEvent.click(screen.getByText(/Add Another Education/i));
 let allInstituteFields = screen.getAllByLabelText(/Institute/i);
 expect(allInstituteFields.length).toBe(2);
 
@@ -107,18 +107,18 @@ expect(allInstituteFields.length).toBe(1);
 it('navigates to the previous step when Back is clicked', () => {
 render(
 <MemoryRouter>
-<Step10 />
+<Step11 />
 </MemoryRouter>
 );
 
 fireEvent.click(screen.getByText(/Back/i));
-expect(mockNavigate).toHaveBeenCalledWith('/signup/step9');
+expect(mockNavigate).toHaveBeenCalledWith('/signup/step10');
 });
 
 it('updates signup data and navigates to next step when Next is clicked', () => {
 render(
 <MemoryRouter>
-<Step10 />
+<Step11 />
 </MemoryRouter>
 );
 
@@ -126,7 +126,7 @@ render(
 fireEvent.change(screen.getByLabelText(/Institute/i), { target: { value: 'ABC College' } });
 fireEvent.change(screen.getByLabelText(/Degree/i), { target: { value: 'MBA' } });
 
-fireEvent.click(screen.getByText(/Next, Add Your Skills/i));
+fireEvent.click(screen.getByText(/Next/i));
 
 expect(mockUpdateSignupData).toHaveBeenCalledWith({
   education: [
@@ -140,6 +140,6 @@ expect(mockUpdateSignupData).toHaveBeenCalledWith({
   ],
 });
 
-expect(mockNavigate).toHaveBeenCalledWith('/signup/step11');
+expect(mockNavigate).toHaveBeenCalledWith('/signup/step12');
 });
 });

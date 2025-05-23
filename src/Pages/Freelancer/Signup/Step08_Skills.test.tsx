@@ -108,7 +108,7 @@ describe("Step8 Component", () => {
             </MemoryRouter>
         );
 
-        const nextButton = screen.getByText("Next, Confirm Profile");
+        const nextButton = screen.getByText("Next");
         fireEvent.click(nextButton);
 
         expect(mockUpdateSignupData).toHaveBeenCalledWith({
