@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSignup } from "../Signup/SignupContext";
 import axios from "axios";
-import { getMockUserId } from "../../../utils/initUser";
+import { getMockUserId, initMockUser } from "../../../utils/initUser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAddressCard } from "@fortawesome/free-solid-svg-icons";
 
@@ -13,8 +13,12 @@ const ProfileReview = () => {
   const [timezone, setTimezone] = useState("Asia/Kolkata");
 
   useEffect(() => {
+    // Always assign a fresh user
+    initMockUser();
+
     const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     setTimezone(userTimezone);
+
     console.log("Freelancer ID (mock):", getMockUserId(signupData.name || "User"));
     console.log("Stored Freelancer ID:", getMockUserId());
   }, [signupData.name]);
@@ -43,11 +47,10 @@ const ProfileReview = () => {
         address: signupData.address?.trim() || "",
         phoneNumber: signupData.phone?.trim() || "",
         isAbcMember: !!signupData.isAbcMember,
-        profilePhotoURL: "sample_url", // Replace with actual upload logic if needed
+        profilePhotoURL: "sample_url", // Replace with actual upload logic
         profileStatus: "PENDING",
-        timezone: timezone
+        timezone: timezone,
       };
-
 
       await axios.post(
         "http://localhost:8081/api/freelancer/create_profile",
@@ -62,7 +65,7 @@ const ProfileReview = () => {
       alert("Profile published successfully!");
       navigate("/dashboard");
     } catch (error) {
-      console.error(" Error publishing profile:", error);
+      console.error("Error publishing profile:", error);
       alert("Failed to publish profile. Check the console for details.");
     } finally {
       setLoading(false);
@@ -71,7 +74,9 @@ const ProfileReview = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-8 bg-white shadow-lg rounded-lg">
-      <h2 className="text-3xl font-bold mb-6 text-center"><FontAwesomeIcon icon={faAddressCard} /> Profile Review</h2>
+      <h2 className="text-3xl font-bold mb-6 text-center">
+        <FontAwesomeIcon icon={faAddressCard} /> Profile Review
+      </h2>
       <p className="text-gray-600 text-center mb-8">
         Review your details before publishing your profile.
       </p>
@@ -131,7 +136,7 @@ const ProfileReview = () => {
             loading ? "bg-green-300 cursor-not-allowed" : "bg-green-500 hover:bg-green-600"
           }`}
         >
-          {loading ? "Publishing..." : "Publish Profile "}
+          {loading ? "Publishing..." : "Publish Profile"}
         </button>
       </div>
     </div>
