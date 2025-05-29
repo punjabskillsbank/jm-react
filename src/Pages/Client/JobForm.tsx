@@ -38,7 +38,7 @@ const JobForm = () => {
     fetchCategories();
   }, []);
 
-  const handleSubmit = async (status: 'DRAFT' | 'IN_REVIEW') => {
+  const handleSubmit = async (jobPostingStatus: 'DRAFT' | 'IN_REVIEW') => {
     const payload = {
       jobPostingId: Date.now(),
       clientId: "88033018-f0aa-44ff-9678-741b37dac853",
@@ -51,12 +51,13 @@ const JobForm = () => {
       projectDuration,
       experienceLevel,
       categoryId: subcategoryToId[selectedSubcategory],
-      status,
+      jobPostingStatus,
     };
 
     try {
+      console.log("Payload being sent:", payload);
       await axios.post('http://localhost:8081/api/v1/job_postings/create_job_posting', payload);
-      alert(`Job ${status} submitted successfully!`);
+      alert(`Job ${jobPostingStatus} submitted successfully!`);
     } catch (error) {
       console.error('Submission failed:', error);
     }
