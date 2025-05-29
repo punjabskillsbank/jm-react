@@ -80,7 +80,7 @@ const ProfileReview = () => {
       );
 
       // Extract presigned URL from response
-      const [freelancerDTO, presignedUrl] = response.data;
+      const { freelancerDTO, presignedUrl } = response.data;
       
       if (!presignedUrl) {
         console.error('Response data:', response.data);
