@@ -39,6 +39,13 @@ interface SignupData {
   bio?: string;
   timezone?: string;
   profileStatus?: string;
+  certificate?: {
+  certificateName: string;
+  issuedBy: string;
+  issueDate: string;
+  expiryDate: string;
+  credentialUrl: string;
+}[];
   [key: string]: unknown;
 }
 
@@ -60,6 +67,11 @@ export const SignupProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       if (updatedData.firstName && updatedData.lastName) {
         updatedData.name = `${updatedData.firstName} ${updatedData.lastName}`;
       }
+
+       if ("abcMembership" in newData) {
+      updatedData.isAbcMember = newData.abcMembership === "yes";
+      delete updatedData.abcMembership; // Optional cleanup
+    }
 
       return updatedData;
     });

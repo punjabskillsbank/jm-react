@@ -69,7 +69,7 @@ const Landing = () => {
         <div className="bg-white shadow-md rounded-lg p-6 max-w-md w-full">
           <h3 className="text-2xl font-semibold mb-4 text-gray-700">Start by Posting a Job</h3>
           <button
-            onClick={() => navigate("/client/post-job")}
+            onClick={() => navigate("/post-job")}
             className="w-full bg-blue-600 text-white text-lg py-3 rounded hover:bg-blue-700"
           >
             <FontAwesomeIcon icon={faPlus} /> Post a Job
