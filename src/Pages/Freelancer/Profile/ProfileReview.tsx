@@ -31,6 +31,7 @@ const ProfileReview = () => {
       const userId = localStorage.getItem("user_id");
       if (!userId) {
         alert("User ID not found in localStorage.");
+        setLoading(false);
         return;
       }
 
@@ -47,7 +48,36 @@ const ProfileReview = () => {
         address: signupData.address?.trim() || "",
         phoneNumber: signupData.phone?.trim() || "",
         isAbcMember: !!signupData.isAbcMember,
-        profilePhotoURL: "sample_url", // Replace with actual upload logic
+        certificates:
+          signupData.certificate?.map((cert) => ({
+            certificateName: cert.certificateName,
+            issuedBy: cert.issuedBy,
+            issueDate: cert.issueDate,
+            expiryDate: cert.expiryDate,
+            credentialUrl: cert.credentialUrl,
+            freelancerId: userId,
+          })) || [],
+        education:
+          signupData.education?.map((edu) => ({
+            institute: edu.institute,
+            degree: edu.degree,
+            start_year: edu.start_year,
+            end_year: edu.end_year,
+            description: edu.description,
+            freelancerId: userId,
+          })) || [],
+        jobs:
+          signupData.experience?.map((job) => ({
+            title: job.title,
+            description: job.description,
+            budget_type: job.budget_type,
+            fixed_price: job.fixed_price,
+            hourly_min_rate: job.hourly_min_rate,
+            hourly_max_rate: job.hourly_max_rate,
+            project_duration: job.project_duration,
+            experience_level: job.experience_level,
+          })) || [],
+        profilePhotoURL: "sample_url",
         profileStatus: "PENDING",
         timezone: timezone,
       };
@@ -82,6 +112,7 @@ const ProfileReview = () => {
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Personal Details */}
         <div className="border p-6 rounded-lg shadow-sm">
           <h3 className="text-lg font-semibold mb-4">Personal Details</h3>
           <p><strong>Name:</strong> {signupData.name || "N/A"}</p>
@@ -93,6 +124,7 @@ const ProfileReview = () => {
           <p><strong>ABC Membership:</strong> {signupData.isAbcMember ? "Yes" : "No"}</p>
         </div>
 
+        {/* Address */}
         <div className="border p-6 rounded-lg shadow-sm">
           <h3 className="text-lg font-semibold mb-4">Address</h3>
           <p>
@@ -101,12 +133,14 @@ const ProfileReview = () => {
           </p>
         </div>
 
+        {/* Freelancing Details */}
         <div className="border p-6 rounded-lg shadow-sm">
           <h3 className="text-lg font-semibold mb-4">Freelancing Details</h3>
           <p><strong>Hourly Rate:</strong> ${signupData.hourlyRate || "Not specified"}/hr</p>
           <p><strong>Timezone:</strong> {timezone}</p>
         </div>
 
+        {/* Profile Picture */}
         <div className="border p-6 rounded-lg shadow-sm">
           <h3 className="text-lg font-semibold mb-4">Profile Picture</h3>
           {signupData.photo ? (
@@ -117,6 +151,71 @@ const ProfileReview = () => {
             />
           ) : (
             <p className="text-gray-500">No photo uploaded</p>
+          )}
+        </div>
+
+        {/* Certificates */}
+        <div className="border p-6 rounded-lg shadow-sm md:col-span-2">
+          <h3 className="text-lg font-semibold mb-4">Certificates</h3>
+          {signupData.certificate && signupData.certificate.length > 0 ? (
+            <ul className="list-disc list-inside space-y-2 max-h-48 overflow-y-auto">
+              {signupData.certificate.map((cert, idx) => (
+                <li key={idx}>
+                  <strong>{cert.certificateName}</strong> by {cert.issuedBy} (
+                  {cert.issueDate} - {cert.expiryDate || "Present"})
+                  {cert.credentialUrl && (
+                    <> — <a href={cert.credentialUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Credential Link</a></>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500">No certificates added</p>
+          )}
+        </div>
+
+        {/* Education */}
+        <div className="border p-6 rounded-lg shadow-sm md:col-span-2">
+          <h3 className="text-lg font-semibold mb-4">Education</h3>
+          {signupData.education && signupData.education.length > 0 ? (
+            <ul className="list-disc list-inside space-y-2 max-h-48 overflow-y-auto">
+              {signupData.education.map((edu, idx) => (
+                <li key={idx}>
+                  <strong>{edu.degree}</strong> at {edu.institute} ({edu.start_year} - {edu.end_year || "Present"})
+                  <p className="text-gray-700">{edu.description}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500">No education records added</p>
+          )}
+        </div>
+
+        {/* Work Experience */}
+        <div className="border p-6 rounded-lg shadow-sm md:col-span-2">
+          <h3 className="text-lg font-semibold mb-4">Work Experience</h3>
+          {signupData.experience && signupData.experience.length > 0 ? (
+            <ul className="list-disc list-inside space-y-4 max-h-64 overflow-y-auto">
+              {signupData.experience.map((job, idx) => (
+                <li key={idx}>
+                  <p><strong>Title:</strong> {job.title}</p>
+                  <p><strong>Description:</strong> {job.description}</p>
+                  <p><strong>Budget Type:</strong> {job.budget_type}</p>
+                  {job.budget_type === "fixed" ? (
+                    <p><strong>Fixed Price:</strong> ${job.fixed_price}</p>
+                  ) : (
+                    <>
+                      <p><strong>Hourly Min Rate:</strong> ${job.hourly_min_rate}</p>
+                      <p><strong>Hourly Max Rate:</strong> ${job.hourly_max_rate}</p>
+                    </>
+                  )}
+                  <p><strong>Project Duration:</strong> {job.project_duration}</p>
+                  <p><strong>Experience Level:</strong> {job.experience_level}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500">No work experience added</p>
           )}
         </div>
       </div>
