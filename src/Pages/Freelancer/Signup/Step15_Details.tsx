@@ -63,7 +63,7 @@ const Step15 = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-4 text-center">10/10 - Final Details</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">11/11 - Final Details</h2>
       <p className="text-gray-600 text-center mb-6">
         A professional photo helps build trust. We also need your details for secure transactions.
       </p>
