@@ -11,6 +11,7 @@ const ProfileReview = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [timezone, setTimezone] = useState("Asia/Kolkata");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Always assign a fresh user
@@ -23,9 +24,24 @@ const ProfileReview = () => {
     console.log("Stored Freelancer ID:", getMockUserId());
   }, [signupData.name]);
 
+  const uploadToS3 = async (presignedUrl: string, file: File) => {
+    try {
+      await axios.put(presignedUrl, file, {
+        headers: {
+          'Content-Type': file.type,
+        },
+      });
+      return true;
+    } catch (error) {
+      console.error('Error uploading to S3:', error);
+      throw new Error('Failed to upload profile photo');
+    }
+  };
+
   const handlePublishProfile = async () => {
     if (loading) return;
     setLoading(true);
+    setError(null);
 
     try {
       const userId = localStorage.getItem("user_id");
@@ -52,8 +68,13 @@ const ProfileReview = () => {
         timezone: timezone,
       };
 
-      await axios.post(
-        "http://localhost:8081/api/freelancer/create_profile",
+      // Get content type from the photo file
+      const contentType = signupData.photo.type;
+
+
+      // First request to create profile and get presigned URL
+      const response = await axios.post(
+        `http://localhost:8080/api/freelancer/create_profile?contentType=${contentType}`,
         payload,
         {
           headers: {
@@ -61,6 +82,23 @@ const ProfileReview = () => {
           },
         }
       );
+
+      // Extract presigned URL from response
+      const { freelancerDTO, presignedUrl } = response.data;
+      
+      if (!presignedUrl) {
+        console.error('Response data:', response.data);
+        throw new Error("No presigned URL received from server");
+      }
+
+       try {
+        await uploadToS3(presignedUrl, signupData.photo);
+        console.log('Photo uploaded successfully');
+      } catch (uploadError) {
+        console.error('Photo upload error:', uploadError);
+        throw new Error('Failed to upload profile photo. Please try again.');
+      }
+
 
       alert("Profile published successfully!");
       navigate("/dashboard");
