@@ -6,7 +6,8 @@ import { SignupProvider } from "./pages/Freelancer/Signup/SignupContext";
 import AppRoutes from "./router/AppRoutes";
 import './index.css';
 import { initMockUser } from "./utils/initUser";
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function App() {
   useEffect(() => {
     initMockUser();
@@ -17,6 +18,7 @@ function App() {
       <AuthProvider>
         <Router>
           <AppRoutes />
+          <ToastContainer position="top-right" autoClose={3000} />
         </Router>
       </AuthProvider>
     </SignupProvider>
