@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { MemoryRouter, useNavigate } from 'react-router-dom';
 import { useSignup } from './SignupContext';
-import Step14 from './Step14_Details';
+import Step15 from './Step15_Details';
 
 
 jest.mock('./SignupContext', () => ({
@@ -14,7 +14,7 @@ jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
 }));
 
-describe('Step14 Component', () => {
+describe('Step15 Component', () => {
   const mockNavigate = jest.fn();
   const mockUpdateSignupData = jest.fn();
 
@@ -38,11 +38,11 @@ describe('Step14 Component', () => {
   it('renders the component correctly', () => {
     render(
       <MemoryRouter>
-        <Step14 />
+        <Step15 />
       </MemoryRouter>
     );
 
-    expect(screen.getByText('10/10 - Final Details')).toBeInTheDocument();
+    expect(screen.getByText('11/11 - Final Details')).toBeInTheDocument();
     expect(screen.getByText('Upload Photo')).toBeInTheDocument();
     expect(screen.getByText('Date of Birth')).toBeInTheDocument();
     expect(screen.getByText('Country')).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe('Step14 Component', () => {
   it('validates the form and shows errors when fields are empty', () => {
     render(
       <MemoryRouter>
-        <Step14 />
+        <Step15 />
       </MemoryRouter>
     );
 
