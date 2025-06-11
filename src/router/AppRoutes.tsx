@@ -14,11 +14,13 @@ import Step10 from "../pages/Freelancer/Signup/Step10_Hourly_Rate";
 import Step11 from "../pages/Freelancer/Signup/Step11_Education";
 import Step12 from "../pages/Freelancer/Signup/Step12_ABC_Member";
 import Step13 from "../pages/Freelancer/Signup/Step13_Bio";
-import Step14 from "../pages/Freelancer/Signup/Step14_Details";
+import Step14 from "../pages/Freelancer/Signup/Step14_Certificates";
+import Step15 from "../pages/Freelancer/Signup/Step15_Details";
 import ProfileReview from "../pages/Freelancer/Profile/ProfileReview";
 import Dashboard from "../Home/Dashboard";
 import Landing from "../Home/Landing";
-//import ClientJobPost from "../pages/Client/ClientJobPost";
+import JobForm from '../pages/Client/JobForm';
+
 
 const AppRoutes = () => {
   return (
@@ -38,10 +40,10 @@ const AppRoutes = () => {
       <Route path="/signup/step12" element={<Step12 />} />
       <Route path="/signup/step13" element={<Step13 />} />
       <Route path="/signup/step14" element={<Step14 />} />
+      <Route path="/signup/step15" element={<Step15 />} />
       <Route path="/signup/profile-review" element={<ProfileReview />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      {/* <Route path="/client/job-post" element={<ClientJobPost />} /> */}
-  
+       <Route path="/post-job" element={<JobForm />} />
       <Route path="*" element={<h1>404 Not Found</h1>} />
   
     </Routes>

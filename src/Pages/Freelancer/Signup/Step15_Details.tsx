@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSignup } from './SignupContext';
 
-const Step13 = () => {
+const Step15 = () => {
   const { signupData, updateSignupData } = useSignup();
   const navigate = useNavigate();
 
@@ -63,7 +63,7 @@ const Step13 = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-4 text-center">10/10 - Final Details</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center">11/11 - Final Details</h2>
       <p className="text-gray-600 text-center mb-6">
         A professional photo helps build trust. We also need your details for secure transactions.
       </p>
@@ -183,7 +183,7 @@ const Step13 = () => {
       </div>
       <div className="flex justify-between mt-6">
         <button
-          onClick={() => navigate('/signup/step12')}
+          onClick={() => navigate('/signup/step14')}
           className="px-4 py-2 bg-gray-300 rounded-md hover:bg-gray-400"
         >
           Back
@@ -199,4 +199,4 @@ const Step13 = () => {
   );
 };
 
-export default Step13;
+export default Step15;

@@ -14,13 +14,14 @@
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
-    "@tailwindcss/vite": "^4.1.4",
+    "@tailwindcss/vite": "^4.1.8",
     "axios": "^1.9.0",
     "lucide-react": "^0.503.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.5.2",
-    "tailwindcss": "^4.1.4",
+    "react-toastify": "^11.0.5",
+    "tailwindcss": "^4.1.8",
     "util": "^0.12.5"
   },
   "devDependencies": {
