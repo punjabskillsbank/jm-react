@@ -3,5 +3,5 @@ export default {
   testEnvironment: 'jsdom',
   setupFiles: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy'}
+    '\\.(css|less|scss|sass)$': 'jest-transform-stub'}
 };
