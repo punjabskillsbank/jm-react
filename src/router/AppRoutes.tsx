@@ -19,7 +19,7 @@ import Step15 from "../pages/Freelancer/Signup/Step15_Details";
 import ProfileReview from "../pages/Freelancer/Profile/ProfileReview";
 import Dashboard from "../Home/Dashboard";
 import Landing from "../Home/Landing";
-import JobForm from '../pages/Client/JobForm';
+import JobPost from '../pages/Client/JobPost';
 
 
 const AppRoutes = () => {
@@ -43,7 +43,7 @@ const AppRoutes = () => {
       <Route path="/signup/step15" element={<Step15 />} />
       <Route path="/signup/profile-review" element={<ProfileReview />} />
       <Route path="/dashboard" element={<Dashboard />} />
-       <Route path="/post-job" element={<JobForm />} />
+       <Route path="/post-job" element={<JobPost />} />
       <Route path="*" element={<h1>404 Not Found</h1>} />
   
     </Routes>
