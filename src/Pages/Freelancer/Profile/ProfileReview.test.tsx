@@ -3,10 +3,9 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import axios from "axios";
 import { BrowserRouter } from "react-router-dom";
-import ProfileReview from "./ProfileReview";
-
-// Import your SignupProvider from its actual path
-import { SignupProvider } from "../Signup/SignupContext";
+import ProfileReview from "../../../pages/Freelancer/Profile/ProfileReview";
+import { SignupProvider } from "../../../pages/Freelancer/Signup/SignupContext";
+import config from "../../../config/indexConfig";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -49,7 +48,7 @@ describe("ProfileReview Component", () => {
     type PayloadType = { freelancerId: string; name: string; [key: string]: unknown };
     const calledPayload = mockedAxios.post.mock.calls[0][1] as PayloadType;
 
-    expect(calledUrl).toBe("http://localhost:8081/api/freelancer/create_profile");
+    expect(calledUrl).toBe(config.baseURLs.users + config.endpoints.createFreelancerProfile);
     expect(calledPayload.freelancerId).toBe("mock-user-123");
     expect(calledPayload.name).toBeDefined();
 

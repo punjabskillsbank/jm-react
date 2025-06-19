@@ -9,6 +9,11 @@ const common = {
     enableNewUI: false,
     loggingEnabled: true,
   },
+  endpoints: {
+    presignedUpload: '/api/presigned_url/upload',
+    createFreelancerProfile: '/api/freelancer/create_profile',
+    // ...other endpoints...
+  },
 };
 
 export default common;
