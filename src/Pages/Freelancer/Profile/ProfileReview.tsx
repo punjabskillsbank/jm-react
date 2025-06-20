@@ -97,6 +97,14 @@ const ProfileReview = () => {
         profilePhotoS3Key: s3Key, // Set S3 key or null
         profileStatus: "PENDING",
         timezone: timezone,
+        profileVisibility: "PRIVATE",
+        categoriesDTO: [
+    {
+      categoryId: 1,
+      category: "Accounting & Consulting",
+      speciality: "Personal & Professional Coaching",
+    },
+        ]
       };
 
       await ProfileService.createFreelancerProfile(payload);

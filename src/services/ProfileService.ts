@@ -30,6 +30,12 @@ export interface JobExperience {
   experience_level?: string;
 }
 
+export interface CategoryDTO {
+  categoryId: number; // @NotNull(message = "CategoryId cannot be null")
+  category?: string;
+  speciality?: string;
+}
+
 export interface ProfilePayload {
   freelancerId: string;
   name: string;
@@ -49,6 +55,8 @@ export interface ProfilePayload {
   profilePhotoS3Key: string | null;
   profileStatus: string;
   timezone: string;
+  profileVisibility: string;
+  categoriesDTO: CategoryDTO[];
 }
 
 export class ProfileService {
