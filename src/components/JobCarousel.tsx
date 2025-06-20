@@ -13,8 +13,8 @@ const JobCarousel = () => {
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     loop: true,
     slides: {
-      perView: 1,
-      spacing: 16,
+      perView: 2,
+      spacing: 30,
     },
     breakpoints: {
       '(min-width: 640px)': {

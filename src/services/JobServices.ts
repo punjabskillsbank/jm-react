@@ -20,3 +20,5 @@ export const fetchCategories = async () => {
   return Array.isArray(res.data) ? res.data : []; // guarantee it's an array
 };
 
+
+

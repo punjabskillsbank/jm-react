@@ -99,7 +99,7 @@ const JobPost = () => {
     }
 
     const payload = {
-      clientId: "88033018-f0aa-44ff-9678-741b37dac853",
+      clientId: "39f89cc0-2df7-4bb6-b503-09cb2c20616d",
       title,
       description,
       budgetType,
@@ -108,7 +108,9 @@ const JobPost = () => {
       fixedPrice: budgetType === 'FIXED' ? fixedPrice : 0,
       projectDuration,
       experienceLevel,
-      categoryId: subcategoryToId[selectedSubcategory],
+      category: {
+        categoryId: subcategoryToId[selectedSubcategory],
+      },
       jobPostingStatus,
     };
 
@@ -239,7 +241,7 @@ const JobPost = () => {
       >
         <option value="BEGINNER">Beginner</option>
         <option value="INTERMEDIATE">Intermediate</option>
-        <option value="ADVANCE">Advance</option>
+        <option value="ADVANCED">Advanced</option>
       </select>
 
       <label htmlFor="category" className="block text-sm font-medium mb-1">Category</label>
