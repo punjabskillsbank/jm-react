@@ -18,7 +18,7 @@ const OpenJobsPage = () => {
   const [showFilters, setShowFilters] = useState(false);
 
   const navigate = useNavigate();
-  const JobsPerPage = 20;
+  const JOBS_PER_PAGE = 20;
 
   const allTags = Array.from(
     new Set(allJobs.flatMap(job => job.category.speciality || []))
@@ -106,8 +106,8 @@ const OpenJobsPage = () => {
       });
     }
 
-    const start = (page - 1) * JobsPerPage;
-    setDisplayedJobs(filtered.slice(start, start + JobsPerPage));
+    const start = (page - 1) * JOBS_PER_PAGE;
+    setDisplayedJobs(filtered.slice(start, start + JOBS_PER_PAGE));
   }, [allJobs, selectedCategories, selectedCategoryNames, sortOrder, page, searchKeyword, selectedSpeciality, experienceLevels, budgetTypes]);
 
   const handleCategoryToggle = (id: number) => {
@@ -331,7 +331,7 @@ const OpenJobsPage = () => {
             </button>
             <span>Page {page}</span>
             <button
-              disabled={page * JobsPerPage >= allJobs.length}
+              disabled={page * JOBS_PER_PAGE >= allJobs.length}
               onClick={() => setPage((p) => p + 1)}
               className="px-4 py-2 border rounded disabled:opacity-50"
             >
