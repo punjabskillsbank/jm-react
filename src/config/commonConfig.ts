@@ -1,8 +1,7 @@
-// src/config/common.ts
 
 const common = {
   ports: {
-    jobPosting: 8081,
+    jobPosting: 8080,
     users: 8081,
   },
   featureFlags: {

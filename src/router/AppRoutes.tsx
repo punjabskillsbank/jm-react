@@ -20,8 +20,9 @@ import ProfileReview from "../pages/Freelancer/Profile/ProfileReview";
 import Dashboard from "../Home/Dashboard";
 import Landing from "../Home/Landing";
 import JobPost from '../pages/Client/JobPost';
-
-
+import JobDetailsPage from "../pages/Jobs/JobDetailsPage";
+import JobCarousel from "../components/JobCarousel";
+import OpenJobsPage from "../pages/Jobs/OpenJobsPage";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -45,7 +46,9 @@ const AppRoutes = () => {
       <Route path="/dashboard" element={<Dashboard />} />
        <Route path="/post-job" element={<JobPost />} />
       <Route path="*" element={<h1>404 Not Found</h1>} />
-  
+      <Route path="/jobs/:id" element={<JobDetailsPage />} />
+      <Route path="/jobs" element={<OpenJobsPage />} />
+      <Route path="/job-carousel" element={<JobCarousel  />} />
     </Routes>
   );
 };
