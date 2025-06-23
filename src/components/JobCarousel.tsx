@@ -13,7 +13,7 @@ const JobCarousel = () => {
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
     loop: true,
     slides: {
-      perView: 2,
+      perView: 1,
       spacing: 30,
     },
     breakpoints: {
@@ -37,7 +37,7 @@ const JobCarousel = () => {
           (a: JobPosting, b: JobPosting) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         )
-        .slice(0, 16); 
+        .slice(0, 10); 
       setJobs(sorted);
     };
     fetchJobs();

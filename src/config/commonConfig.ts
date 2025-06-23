@@ -1,4 +1,3 @@
-// src/config/common.ts
 
 const common = {
   ports: {
