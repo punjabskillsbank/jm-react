@@ -8,17 +8,17 @@ export interface MockUser {
   
   export const mockUsers: MockUser[] = [
     {
-      id: "39f89cc0-2df7-4bb6-b503-09cb2c20616d",
+      id: "73de5765-240c-4619-a45f-dedc037fb4a3",
       name: "Ishmeet Singh",
       email: "ishmeetsingh@gmail.com",
     },
     {
-      id: "88033018-f0aa-44ff-9678-741b37dac853",
+      id: "73de5765-240c-4619-a45f-dedc037fb4a3",
       name: "Ishita Sharma",
       email: "ishita@example.com",
     },
     {
-      id: "c19c0442-246f-4c1d-9129-9800dc174cb8",
+     id: "73de5765-240c-4619-a45f-dedc037fb4a3",
       name: "Kunal Verma",
       email: "kunal@example.com",
     },
