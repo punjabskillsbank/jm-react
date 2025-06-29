@@ -1,6 +1,8 @@
 import axios from "axios";
 import config from "../config/indexConfig";
 
+const S3_UPLOAD_RETRIES_NUM = 3;
+
 export interface Certificate {
   certificateName: string;
   issuedBy: string;
@@ -68,7 +70,7 @@ export class ProfileService {
     return data;
   }
 
-  static async uploadPhotoToS3(presignedUrl: string, file: File, retries = 3) {
+  static async uploadPhotoToS3(presignedUrl: string, file: File, retries = S3_UPLOAD_RETRIES_NUM) {
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
         await axios.put(presignedUrl, file, {
