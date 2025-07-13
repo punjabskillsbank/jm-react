@@ -18,6 +18,7 @@ import Step14 from "../pages/Freelancer/Signup/Step14_Certificates";
 import Step15 from "../pages/Freelancer/Signup/Step15_Details";
 import ProfileReview from "../pages/Freelancer/Profile/ProfileReview";
 import Dashboard from "../Home/Dashboard";
+import AdminReview from "../Pages/Admin/AdminReview";
 import Landing from "../Home/Landing";
 import JobPost from '../pages/Client/JobPost';
 import JobDetailsPage from "../pages/Jobs/JobDetailsPage";
@@ -49,6 +50,7 @@ const AppRoutes = () => {
       <Route path="/jobs/:id" element={<JobDetailsPage />} />
       <Route path="/jobs" element={<OpenJobsPage />} />
       <Route path="/job-carousel" element={<JobCarousel  />} />
+      <Route path="/admin/review" element={<AdminReview />} />
     </Routes>
   );
 };
