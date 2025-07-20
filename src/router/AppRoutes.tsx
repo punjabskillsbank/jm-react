@@ -23,6 +23,7 @@ import JobPost from '../pages/Client/JobPost';
 import JobDetailsPage from "../pages/Jobs/JobDetailsPage";
 import JobCarousel from "../components/JobCarousel";
 import OpenJobsPage from "../pages/Jobs/OpenJobsPage";
+import SubmitProposalPage from "../pages/Jobs/SubmitProposalPage";
 const AppRoutes = () => {
   return (
     <Routes>
@@ -49,6 +50,7 @@ const AppRoutes = () => {
       <Route path="/jobs/:id" element={<JobDetailsPage />} />
       <Route path="/jobs" element={<OpenJobsPage />} />
       <Route path="/job-carousel" element={<JobCarousel  />} />
+      <Route path="/jobs/:id/apply" element={<SubmitProposalPage />} />
     </Routes>
   );
 };
