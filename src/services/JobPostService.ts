@@ -29,6 +29,7 @@ experienceLevel: string;
 categoryId: number;
 jobPostingStatus: string;
 skills: string[];
+questions: string[];
 }
 
 // Create job posting

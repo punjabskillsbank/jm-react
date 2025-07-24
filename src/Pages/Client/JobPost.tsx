@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { fetchCategories } from '../../services/JobPostService';
-
+import { createJobPosting, JobPostingPayload } from '../../services/JobPostService';
 const JobPost: React.FC = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -42,72 +42,43 @@ const JobPost: React.FC = () => {
     loadCategories();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    // Basic validation
-    if (!title.trim()) {
-      toast.error('Title is required');
-      return;
-    }
-    if (!description.trim()) {
-      toast.error('Description is required');
-      return;
-    }
-    if (budgetType === 'HOURLY' && (hourlyMinRate == null || hourlyMaxRate == null)) {
-      toast.error('Please provide both min and max hourly rates');
-      return;
-    }
-    if (budgetType === 'FIXED' && fixedPrice == null) {
-      toast.error('Please provide a fixed price');
-      return;
-    }
+  if (!title.trim()) return toast.error('Title is required');
+  if (!description.trim()) return toast.error('Description is required');
+  if (budgetType === 'HOURLY' && (hourlyMinRate == null || hourlyMaxRate == null)) {
+    return toast.error('Please provide both min and max hourly rates');
+  }
+  if (budgetType === 'FIXED' && fixedPrice == null) {
+    return toast.error('Please provide a fixed price');
+  }
 
-    const payload = {
-      clientId: '39f89cc0-2df7-4bb6-b503-09cb2c20616d',
-      title: title.trim(),
-      description: description.trim(),
-      budgetType,
-      hourlyMinRate: budgetType === 'HOURLY' ? hourlyMinRate : 0,
-      hourlyMaxRate: budgetType === 'HOURLY' ? hourlyMaxRate : 0,
-      fixedPrice: budgetType === 'FIXED' ? fixedPrice : 0,
-      projectDuration,
-      experienceLevel,
-      category: {
-        categoryId: subcategoryToId?.[selectedSubcategory] ?? 0,
-      },
-      jobPostingStatus,
-      skills: skills.map((skill, index) => ({
-        skillId: index + 1,
-        skill,
-      })),
-      questions: questions.map((question, index) => ({
-        questionId: index + 1,
-        question,
-      })),
-    };
-
-    try {
-      const response = await fetch('http://localhost:8081/api/v1/job_postings/create_job_posting', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errData = await response.json();
-        toast.error(`Submission failed: ${errData.message || response.statusText}`);
-        return;
-      }
-
-      await response.json();
-      toast.success('Job posted successfully!');
-    } catch (err) {
-      console.error(err);
-      toast.error('Error submitting job');
-    }
+  const payload: JobPostingPayload = {
+    clientId: '39f89cc0-2df7-4bb6-b503-09cb2c20616d',
+    title: title.trim(),
+    description: description.trim(),
+    budgetType,
+    hourlyMinRate: budgetType === 'HOURLY' ? hourlyMinRate : 0,
+    hourlyMaxRate: budgetType === 'HOURLY' ? hourlyMaxRate : 0,
+    fixedPrice: budgetType === 'FIXED' ? fixedPrice : 0,
+    projectDuration,
+    experienceLevel,
+    categoryId: subcategoryToId?.[selectedSubcategory] ?? 0,
+    jobPostingStatus,
+    skills: skills,
+    questions: questions  ,
   };
 
+  try {
+    await createJobPosting(payload);
+    toast.success('Job posted successfully!');
+    // Optionally, reset form here
+  } catch (err: any) {
+    toast.error(`Submission failed: ${err.message}`);
+  }
+};
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl mx-auto p-6 bg-white rounded shadow space-y-4">
       {/* Title */}
