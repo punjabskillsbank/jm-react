@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSignup } from "../Signup/SignupContext";
-import axios from "axios";
 import { getMockUserId, initMockUser } from "../../../utils/initUser";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAddressCard } from "@fortawesome/free-solid-svg-icons";
+import { ProfileService, ProfilePayload } from "../../../services/ProfileService";
 
 const ProfileReview = () => {
   const { signupData } = useSignup();
@@ -27,6 +27,9 @@ const ProfileReview = () => {
     if (loading) return;
     setLoading(true);
 
+    let s3Key = null;
+    const photoFile = signupData.photo;
+
     try {
       const userId = localStorage.getItem("user_id");
       if (!userId) {
@@ -35,7 +38,21 @@ const ProfileReview = () => {
         return;
       }
 
-      const payload = {
+      if (photoFile) {
+        try {
+          // 1. Get presigned URL
+          const { uploadUrl, s3Key: returnedS3Key } = await ProfileService.getPresignedUrl(userId, photoFile.type);
+          if (!uploadUrl) throw new Error("No uploadUrl returned from backend");
+          // 2. Upload to S3
+          await ProfileService.uploadPhotoToS3(uploadUrl, photoFile);
+          s3Key = returnedS3Key;
+        } catch (error) {
+          alert("Profile photo is not uploaded.");
+          s3Key = null;
+        }
+      }
+
+      const payload: ProfilePayload = {
         freelancerId: userId,
         name: signupData.name || "",
         title: signupData.title?.trim() || "",
@@ -71,27 +88,26 @@ const ProfileReview = () => {
             title: job.title,
             description: job.description,
             budget_type: job.budget_type,
-            fixed_price: job.fixed_price,
-            hourly_min_rate: job.hourly_min_rate,
-            hourly_max_rate: job.hourly_max_rate,
+            fixed_price: job.fixed_price ? Number(job.fixed_price) : 0,
+            hourly_min_rate: job.hourly_min_rate ? Number(job.hourly_min_rate) : 0,
+            hourly_max_rate: job.hourly_max_rate ? Number(job.hourly_max_rate) : 0,
             project_duration: job.project_duration,
             experience_level: job.experience_level,
           })) || [],
-        profilePhotoURL: "sample_url",
+        profilePhotoS3Key: s3Key, // Set S3 key or null
         profileStatus: "PENDING",
         timezone: timezone,
+        profileVisibility: "PRIVATE",
+        categoriesDTO: [
+    {
+      categoryId: 1,
+      category: "Accounting & Consulting",
+      speciality: "Personal & Professional Coaching",
+    },
+        ]
       };
 
-      await axios.post(
-        "http://localhost:8081/api/freelancer/create_profile",
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
+      await ProfileService.createFreelancerProfile(payload);
       alert("Profile published successfully!");
       navigate("/dashboard");
     } catch (error) {
