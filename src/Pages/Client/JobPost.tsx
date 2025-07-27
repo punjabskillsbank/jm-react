@@ -60,15 +60,15 @@ const handleSubmit = async (e: React.FormEvent) => {
     title: title.trim(),
     description: description.trim(),
     budgetType,
-    hourlyMinRate: budgetType === 'HOURLY' ? hourlyMinRate : 0,
-    hourlyMaxRate: budgetType === 'HOURLY' ? hourlyMaxRate : 0,
-    fixedPrice: budgetType === 'FIXED' ? fixedPrice : 0,
+    hourlyMinRate: budgetType === 'HOURLY' ? hourlyMinRate : null,
+    hourlyMaxRate: budgetType === 'HOURLY' ? hourlyMaxRate : null,
+    fixedPrice: budgetType === 'FIXED' ? fixedPrice : null,
     projectDuration,
     experienceLevel,
     categoryId: subcategoryToId?.[selectedSubcategory] ?? 0,
     jobPostingStatus,
     skills: skills,
-    questions: questions  ,
+    questions: questions,
   };
 
   try {
@@ -79,8 +79,10 @@ const handleSubmit = async (e: React.FormEvent) => {
     toast.error(`Submission failed: ${err.message}`);
   }
 };
+  const formRef = React.useRef<HTMLFormElement>(null);
+
   return (
-    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto p-6 bg-white rounded shadow space-y-4">
+    <form ref={formRef} onSubmit={handleSubmit} className="max-w-3xl mx-auto p-6 bg-white rounded shadow space-y-4">
       {/* Title */}
       <div>
         <label htmlFor="title" className="block text-sm font-medium">Title</label>
@@ -195,13 +197,30 @@ const handleSubmit = async (e: React.FormEvent) => {
           ))}
         </ul>
       </div>
-
       {/* Submit Buttons */}
       <div className="flex justify-between gap-4">
-        <button type="submit" onClick={() => setJobPostingStatus('DRAFT')} className="w-1/2 bg-gray-500 text-white py-2 rounded">
+        <button
+          type="button"
+          onClick={async () => {
+            setJobPostingStatus('DRAFT');
+            setTimeout(() => {
+              formRef.current?.requestSubmit();
+            }, 0);
+          }}
+          className="w-1/2 bg-gray-500 text-white py-2 rounded"
+        >
           Draft Job
         </button>
-        <button type="submit" onClick={() => setJobPostingStatus('IN_REVIEW')} className="w-1/2 bg-blue-600 text-white py-2 rounded">
+        <button
+          type="button"
+          onClick={async () => {
+            setJobPostingStatus('IN_REVIEW');
+            setTimeout(() => {
+              formRef.current?.requestSubmit();
+            }, 0);
+          }}
+          className="w-1/2 bg-blue-600 text-white py-2 rounded"
+        >
           Post Job
         </button>
       </div>
