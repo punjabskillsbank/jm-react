@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { fetchJobById } from '../../services/JobServices';
+import { JobPosting } from '../../types/JobPosting';
 
 const JobDetailsPage = () => {
   const { id } = useParams();
@@ -10,7 +11,7 @@ const JobDetailsPage = () => {
   useEffect(() => {
     const loadJob = async () => {
       try {
-        const data = await fetchJobById(id!); // force unwrap or add check
+        const data = await fetchJobById(Number(id)); // convert id to number
         setJob(data);
       } catch (error) {
         console.error("Failed to fetch job:", error);
