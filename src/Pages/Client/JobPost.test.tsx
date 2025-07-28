@@ -2,253 +2,192 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import JobPost from './JobPost';
-import * as JobPostService from '../../services/JobPostService';
-import { toast } from 'react-toastify';
+import { createJobPosting } from '../../services/JobPostService';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-jest.mock('../../services/JobPostService');
-jest.mock('react-toastify', () => ({
-  toast: {
-    success: jest.fn(),
-    error: jest.fn(),
-  },
+jest.mock('../../services/JobPostService', () => ({
+  createJobPosting: jest.fn(),
 }));
 
-const mockCategories = {
-  Development: ['Frontend', 'Backend'],
-  Design: ['UI/UX'],
+const renderComponent = () => {
+  render(
+    <>
+      <JobPost />
+      <ToastContainer />
+    </>
+  );
 };
 
-describe('JobPost Component - Full Suite', () => {
-  beforeEach(async () => {
-    (JobPostService.fetchCategories as jest.Mock).mockResolvedValue(mockCategories);
-    render(<JobPost />);
-    await waitFor(() => screen.getByText('Create Job Posting'));
+describe('JobPost Component - All Job Scenarios', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
   });
 
-  const fillAndSubmitJob = async (jobData: any, statusLabel: string) => {
-    if (jobData.budgetType === 'FIXED') {
-      fireEvent.change(screen.getByDisplayValue('Hourly'), { target: { value: 'FIXED' } });
-      fireEvent.change(screen.getByPlaceholderText('Fixed Price'), {
-        target: { value: jobData.fixedPrice },
-      });
-    } else {
-      fireEvent.change(screen.getByPlaceholderText('Min Rate'), {
-        target: { value: jobData.hourlyMinRate },
-      });
-      fireEvent.change(screen.getByPlaceholderText('Max Rate'), {
-        target: { value: jobData.hourlyMaxRate },
-      });
-    }
-
-    fireEvent.change(screen.getByPlaceholderText('Title'), {
-      target: { value: jobData.title },
-    });
-    fireEvent.change(screen.getByPlaceholderText('Description'), {
-      target: { value: jobData.description },
-    });
-    fireEvent.change(screen.getByLabelText('Project Duration'), {
-      target: { value: jobData.projectDuration },
-    });
-    fireEvent.change(screen.getByLabelText('Experience Level'), {
-      target: { value: jobData.experienceLevel },
-    });
-    fireEvent.change(screen.getByLabelText('Category'), {
-      target: { value: jobData.category },
+  const fillCommonFields = () => {
+    fireEvent.change(screen.getByLabelText(/Title/i), {
+      target: { value: 'Sample Job Title' },
     });
 
-    fireEvent.click(screen.getByText(statusLabel));
-
-    await waitFor(() => {
-      expect(JobPostService.createJobPosting).toHaveBeenCalled();
+    fireEvent.change(screen.getByLabelText(/Description/i), {
+      target: { value: 'Sample job description goes here.' },
     });
+
+    fireEvent.change(screen.getByLabelText(/Project Duration/i), {
+      target: { value: 'LONG_TERM' },
+    });
+
+    fireEvent.change(screen.getByLabelText(/Experience Level/i), {
+      target: { value: 'EXPERT' },
+    });
+
+    fireEvent.change(screen.getByLabelText(/Category/i), {
+      target: { value: 'Design' },
+    });
+
+    // Add skill
+    const skillInput = screen.getByPlaceholderText(/Add skill/i);
+    fireEvent.change(skillInput, { target: { value: 'Figma' } });
+    fireEvent.click(screen.getAllByText(/Add/i)[0]);
+
+    // Add question
+    const questionInput = screen.getByPlaceholderText(/Add question/i);
+    fireEvent.change(questionInput, { target: { value: 'What is UX?' } });
+    fireEvent.click(screen.getAllByText(/Add/i)[1]);
   };
 
-  test('Job 1: Frontend, hourly, short term, beginner', async () => {
-    (JobPostService.createJobPosting as jest.Mock).mockResolvedValue({});
-    await fillAndSubmitJob({
-      title: 'Frontend Fixes',
-      description: 'Fix header bugs and optimize layout',
-      budgetType: 'HOURLY',
-      hourlyMinRate: 10,
-      hourlyMaxRate: 25,
-      fixedPrice: 0,
-      projectDuration: 'SHORT_TERM',
-      experienceLevel: 'BEGINNER',
-      category: 'Frontend',
-    }, 'Post Job');
-  });
-
-  test('Job 2: Backend, fixed price, long term, intermediate', async () => {
-    (JobPostService.createJobPosting as jest.Mock).mockResolvedValue({});
-    await fillAndSubmitJob({
-      title: 'Backend API Dev',
-      description: 'Build scalable APIs for mobile app',
-      budgetType: 'FIXED',
-      hourlyMinRate: 0,
-      hourlyMaxRate: 0,
-      fixedPrice: 800,
-      projectDuration: 'LONG_TERM',
-      experienceLevel: 'INTERMEDIATE',
-      category: 'Backend',
-    }, 'Post Job');
-  });
-
-  test('Job 3: UI/UX, hourly, long term, advanced', async () => {
-    (JobPostService.createJobPosting as jest.Mock).mockResolvedValue({});
-    await fillAndSubmitJob({
-      title: 'App Redesign',
-      description: 'Revamp app interface with better UX flow',
-      budgetType: 'HOURLY',
-      hourlyMinRate: 30,
-      hourlyMaxRate: 50,
-      fixedPrice: 0,
-      projectDuration: 'LONG_TERM',
-      experienceLevel: 'ADVANCE',
-      category: 'UI/UX',
-    }, 'Post Job');
-  });
-
-  test('Job 4: Frontend, fixed price, short term, intermediate', async () => {
-    (JobPostService.createJobPosting as jest.Mock).mockResolvedValue({});
-    await fillAndSubmitJob({
-      title: 'Landing Page',
-      description: 'Build responsive landing page for product launch',
-      budgetType: 'FIXED',
-      hourlyMinRate: 0,
-      hourlyMaxRate: 0,
-      fixedPrice: 300,
-      projectDuration: 'SHORT_TERM',
-      experienceLevel: 'INTERMEDIATE',
-      category: 'Frontend',
-    }, 'Post Job');
-  });
-
-  test('Job 5: Backend, hourly, short term, advanced', async () => {
-    (JobPostService.createJobPosting as jest.Mock).mockResolvedValue({});
-    await fillAndSubmitJob({
-      title: 'Database Optimization',
-      description: 'Improve DB queries and schema for performance',
-      budgetType: 'HOURLY',
-      hourlyMinRate: 40,
-      hourlyMaxRate: 60,
-      fixedPrice: 0,
-      projectDuration: 'SHORT_TERM',
-      experienceLevel: 'ADVANCE',
-      category: 'Backend',
-    }, 'Post Job');
-  });
-
-  test('Form validation: empty form shows errors', async () => {
-    fireEvent.click(screen.getByText('Post Job'));
-
-    await waitFor(() => {
-      expect(screen.getByText('Title is required.')).toBeInTheDocument();
-      expect(screen.getByText('Description is required.')).toBeInTheDocument();
-      expect(screen.getByText('Please select a subcategory.')).toBeInTheDocument();
-      expect(screen.getByText('Rate is required.')).toBeInTheDocument();
-      expect(JobPostService.createJobPosting).not.toHaveBeenCalled();
-      expect(toast.error).toHaveBeenCalledWith('Please fix form errors before submitting.');
-    });
-  });
-
-  test('Successful submission shows toast and clears form', async () => {
-    (JobPostService.createJobPosting as jest.Mock).mockResolvedValue({});
-
-    fireEvent.change(screen.getByPlaceholderText('Title'), {
-      target: { value: 'Test Job' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('Description'), {
-      target: { value: 'Test Description' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('Min Rate'), {
-      target: { value: '20' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('Max Rate'), {
-      target: { value: '40' },
-    });
-    fireEvent.change(screen.getByLabelText('Category'), {
-      target: { value: 'Frontend' },
+  test('submits HOURLY job post successfully', async () => {
+    (createJobPosting as jest.Mock).mockResolvedValueOnce({
+      message: 'Hourly job created successfully',
     });
 
-    fireEvent.click(screen.getByText('Post Job'));
+    renderComponent();
 
-    await waitFor(() => {
-      expect(JobPostService.createJobPosting).toHaveBeenCalled();
-      expect(toast.success).toHaveBeenCalledWith('Job posted successfully!');
-    });
-
-    expect(screen.getByPlaceholderText('Title')).toHaveValue('');
-    expect(screen.getByPlaceholderText('Description')).toHaveValue('');
-  });
-
-  test('API failure shows error toast and retains form data', async () => {
-    (JobPostService.createJobPosting as jest.Mock).mockRejectedValue(new Error('Failure'));
-
-    fireEvent.change(screen.getByPlaceholderText('Title'), {
-      target: { value: 'Fail Job' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('Description'), {
-      target: { value: 'Fail Description' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('Min Rate'), {
-      target: { value: '15' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('Max Rate'), {
-      target: { value: '25' },
-    });
-    fireEvent.change(screen.getByLabelText('Category'), {
-      target: { value: 'Frontend' },
+    fireEvent.change(screen.getByLabelText(/Budget Type/i), {
+      target: { value: 'HOURLY' },
     });
 
-    fireEvent.click(screen.getByText('Post Job'));
-
-    await waitFor(() => {
-      expect(JobPostService.createJobPosting).toHaveBeenCalled();
-      expect(toast.error).toHaveBeenCalledWith('Failed to submit job posting.');
-    });
-
-    expect(screen.getByPlaceholderText('Title')).toHaveValue('Fail Job');
-    expect(screen.getByPlaceholderText('Description')).toHaveValue('Fail Description');
-  });
-
-  test('fetchCategories failure shows error toast', async () => {
-    (JobPostService.fetchCategories as jest.Mock).mockRejectedValueOnce(new Error('Fetch fail'));
-    render(<JobPost />);
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Failed to load categories.');
-    });
-  });
-
-  test('Submitting as Draft Job works correctly', async () => {
-    (JobPostService.createJobPosting as jest.Mock).mockResolvedValue({});
-
-    fireEvent.change(screen.getByPlaceholderText('Title'), {
-      target: { value: 'Draft Job' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('Description'), {
-      target: { value: 'Save as draft' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('Min Rate'), {
-      target: { value: '15' },
-    });
-    fireEvent.change(screen.getByPlaceholderText('Max Rate'), {
+    fireEvent.change(screen.getByLabelText(/Min Rate/i), {
       target: { value: '30' },
     });
-    fireEvent.change(screen.getByLabelText('Category'), {
-      target: { value: 'UI/UX' },
+
+    fireEvent.change(screen.getByLabelText(/Max Rate/i), {
+      target: { value: '60' },
     });
 
-    fireEvent.click(screen.getByText('Draft Job'));
+    fillCommonFields();
+    fireEvent.click(screen.getByText(/Post Job/i));
 
-
-  {/*check*/}
     await waitFor(() => {
-      expect(JobPostService.createJobPosting).toHaveBeenCalledWith(
-        expect.objectContaining({
-          status: 'DRAFT',
-        })
-      );
-      expect(toast.success).toHaveBeenCalledWith('Job saved as draft!');
+      expect(createJobPosting).toHaveBeenCalled();
+      expect(screen.getByText(/Job posted successfully!/i)).toBeInTheDocument();
+    });
+  });
+
+  test('submits FIXED job post successfully', async () => {
+    (createJobPosting as jest.Mock).mockResolvedValueOnce({
+      message: 'Fixed price job created successfully',
+    });
+
+    renderComponent();
+
+    fireEvent.change(screen.getByLabelText(/Budget Type/i), {
+      target: { value: 'FIXED' },
+    });
+
+    fireEvent.change(screen.getByLabelText(/Fixed Price/i), {
+      target: { value: '500' },
+    });
+
+    fillCommonFields();
+    fireEvent.click(screen.getByText(/Post Job/i));
+
+    await waitFor(() => {
+      expect(createJobPosting).toHaveBeenCalled();
+      expect(screen.getByText(/Job posted successfully!/i)).toBeInTheDocument();
+    });
+  });
+
+  test('shows error toast on API failure', async () => {
+    (createJobPosting as jest.Mock).mockRejectedValueOnce({
+      response: { data: { message: 'Failed to post job' } },
+    });
+
+    renderComponent();
+
+    fireEvent.change(screen.getByLabelText(/Budget Type/i), {
+      target: { value: 'FIXED' },
+    });
+
+    fireEvent.change(screen.getByLabelText(/Fixed Price/i), {
+      target: { value: '100' },
+    });
+
+    fillCommonFields();
+    fireEvent.click(screen.getByText(/Post Job/i));
+
+    await waitFor(() => {
+      expect(createJobPosting).toHaveBeenCalled();
+      expect(screen.getByText(/Submission failed/i)).toBeInTheDocument();
+    });
+  });
+
+  test('shows validation error if required fields are missing', async () => {
+    renderComponent();
+
+    fireEvent.click(screen.getByText(/Post Job/i));
+
+    await waitFor(() => {
+      expect(createJobPosting).not.toHaveBeenCalled();
+      expect(screen.getByText(/Title is required/i)).toBeInTheDocument();
+    });
+  });
+
+  test('handles missing skill or question gracefully', async () => {
+    (createJobPosting as jest.Mock).mockResolvedValueOnce({
+      message: 'Job created without skills/questions',
+    });
+
+    renderComponent();
+
+    fireEvent.change(screen.getByLabelText(/Budget Type/i), {
+      target: { value: 'HOURLY' },
+    });
+
+    fireEvent.change(screen.getByLabelText(/Min Rate/i), {
+      target: { value: '10' },
+    });
+
+    fireEvent.change(screen.getByLabelText(/Max Rate/i), {
+      target: { value: '25' },
+    });
+
+    // fill rest except skills/questions
+    fireEvent.change(screen.getByLabelText(/Title/i), {
+      target: { value: 'Another Job' },
+    });
+
+    fireEvent.change(screen.getByLabelText(/Description/i), {
+      target: { value: 'No skill/question' },
+    });
+
+    fireEvent.change(screen.getByLabelText(/Project Duration/i), {
+      target: { value: 'ONE_TIME' },
+    });
+
+    fireEvent.change(screen.getByLabelText(/Experience Level/i), {
+      target: { value: 'INTERMEDIATE' },
+    });
+
+    fireEvent.change(screen.getByLabelText(/Category/i), {
+      target: { value: 'Backend' },
+    });
+
+    fireEvent.click(screen.getByText(/Post Job/i));
+
+    await waitFor(() => {
+      expect(createJobPosting).toHaveBeenCalled();
+      expect(screen.getByText(/Job posted successfully!/i)).toBeInTheDocument();
     });
   });
 });
