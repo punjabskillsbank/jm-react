@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { fetchCategories } from '../../services/JobPostService';
-import { createJobPosting, JobPostingPayload } from '../../services/JobPostService';
+import { createJobPosting, JobPostingPayload, uploadFilesToS3, saveAttachmentUrls,} from '../../services/JobPostService';
 const JobPost: React.FC = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -19,6 +19,7 @@ const JobPost: React.FC = () => {
   const [questions, setQuestions] = useState<string[]>([]);
   const [newQuestion, setNewQuestion] = useState('');
   const [jobPostingStatus, setJobPostingStatus] = useState<'DRAFT' | 'IN_REVIEW'>('IN_REVIEW');
+  const [attachments, setAttachments] = useState<File[]>([]);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -67,14 +68,23 @@ const handleSubmit = async (e: React.FormEvent) => {
     experienceLevel,
     categoryId: subcategoryToId?.[selectedSubcategory] ?? 0,
     jobPostingStatus,
-    skills: skills,
+    //skills: skills,
     questions: questions,
   };
 
   try {
-    await createJobPosting(payload);
+    const response = await createJobPosting(payload);
+            const jobId = response.jobPostingId;
+
+            const fileURLs = attachments.length > 0
+              ? await uploadFilesToS3(attachments, jobId)
+              : [];
+
+            if (fileURLs.length > 0) {
+              await saveAttachmentUrls(jobId, fileURLs);
+            }
     toast.success('Job posted successfully!');
-    // Optionally, reset form here
+    resetForm();
   } catch (err: any) {
     toast.error(`Submission failed: ${err.message}`);
   }
@@ -176,6 +186,41 @@ const handleSubmit = async (e: React.FormEvent) => {
           ))}
         </ul>
       </div>
+
+    {/* Job Posting Attachement*/}
+    <label className="block text-sm font-medium mb-1">Attachments (Max 10 files)</label>
+          <input
+            type="file"
+            multiple
+            accept="*"
+            onChange={(e) => {
+              const newFiles = Array.from(e.target.files || []);
+
+              const combinedFiles = [...attachments, ...newFiles];
+
+              if (combinedFiles.length > 10) {
+                toast.error('You can upload up to 10 files in total.');
+                return;
+              }
+              setAttachments(combinedFiles);
+            }}
+            className="w-full p-2 border rounded"
+          />
+          <ul className="text-sm mt-2">
+            {attachments.map((file, idx) => (
+              <li key={idx} className="flex justify-between items-center">
+                {file.name}
+                <button
+                  className="ml-2 text-red-500 text-xs"
+                  onClick={() => {
+                    setAttachments(prev => prev.filter((_, i) => i !== idx));
+                  }}
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
 
       {/* Screening Questions */}
       <div>
