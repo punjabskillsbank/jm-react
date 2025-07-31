@@ -1,21 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { fetchCategories, createJobPosting } from '../../services/JobPostService';
+import { fetchCategories, createJobPosting, JobPostingPayload } from '../../services/JobPostService';
 
-const JobPost = () => {
-  const [subcategories, setSubcategories] = useState<string[]>([]);
-  const [subcategoryToId, setSubcategoryToId] = useState<Record<string, number>>({});
-  const [selectedSubcategory, setSelectedSubcategory] = useState('');
+const JobPost: React.FC = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [budgetType, setBudgetType] = useState<'HOURLY' | 'FIXED'>('HOURLY');
-  const [hourlyMinRate, setHourlyMinRate] = useState<number>(0);
-  const [hourlyMaxRate, setHourlyMaxRate] = useState<number>(0);
-  const [fixedPrice, setFixedPrice] = useState<number>(0);
-  const [projectDuration, setProjectDuration] = useState<'SHORT_TERM' | 'LONG_TERM'>('SHORT_TERM');
-  const [experienceLevel, setExperienceLevel] = useState<'BEGINNER' | 'INTERMEDIATE' | 'ADVANCE'>('BEGINNER');
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [hourlyMinRate, setHourlyMinRate] = useState<number | null>(null);
+  const [hourlyMaxRate, setHourlyMaxRate] = useState<number | null>(null);
+  const [fixedPrice, setFixedPrice] = useState<number | null>(null);
+  const [projectDuration, setProjectDuration] = useState('');
+  const [experienceLevel, setExperienceLevel] = useState('');
+  const [selectedSubcategory, setSelectedSubcategory] = useState('');
+  const [subcategoryToId, setSubcategoryToId] = useState<{ [key: string]: number }>({});
+  const [subcategories, setSubcategories] = useState<string[]>([]);
+  const [skills, setSkills] = useState<string[]>([]);
+  const [newSkill, setNewSkill] = useState('');
+  const [questions, setQuestions] = useState<string[]>([]);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -36,236 +37,195 @@ const JobPost = () => {
         toast.error('Failed to load categories');
       }
     };
-
     loadCategories();
   }, []);
 
-  const validateField = (field: string, value: string | number) => {
-    switch (field) {
-      case 'title':
-        return value ? '' : 'Title is required.';
-      case 'description':
-        return value ? '' : 'Description is required.';
-      case 'subcategory':
-        return value ? '' : 'Please select a subcategory.';
-      case 'hourlyMinRate':
-      case 'hourlyMaxRate':
-        if (budgetType === 'HOURLY' && !value) return 'Rate is required.';
-        break;
-      case 'fixedPrice':
-        if (budgetType === 'FIXED' && !value) return 'Fixed price is required.';
-        break;
-      default:
-        return '';
-    }
-    return '';
+  const addQuestion = () => {
+    setQuestions([...questions, '']);
   };
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {
-      title: validateField('title', title),
-      description: validateField('description', description),
-      subcategory: validateField('subcategory', selectedSubcategory),
-    };
-
-    if (budgetType === 'HOURLY') {
-      newErrors.hourlyMinRate = validateField('hourlyMinRate', hourlyMinRate);
-      newErrors.hourlyMaxRate = validateField('hourlyMaxRate', hourlyMaxRate);
-    } else {
-      newErrors.fixedPrice = validateField('fixedPrice', fixedPrice);
-    }
-
-    setErrors(newErrors);
-    return Object.values(newErrors).every(err => !err);
+  const handleQuestionChange = (index: number, value: string) => {
+    const newQuestions = [...questions];
+    newQuestions[index] = value;
+    setQuestions(newQuestions);
   };
 
-  const resetForm = () => {
-    setTitle('');
-    setDescription('');
-    setBudgetType('HOURLY');
-    setHourlyMinRate(0);
-    setHourlyMaxRate(0);
-    setFixedPrice(0);
-    setProjectDuration('SHORT_TERM');
-    setExperienceLevel('BEGINNER');
-    setSelectedSubcategory('');
-    setErrors({});
-  };
+  const handleSubmit = async (
+    e: React.FormEvent | null,
+    status: 'DRAFT' | 'IN_REVIEW'
+  ) => {
+    if (e) e.preventDefault();
 
-  const handleSubmit = async (jobPostingStatus: 'DRAFT' | 'IN_REVIEW') => {
-    if (!validateForm()) {
-      toast.error("Please fix form errors before submitting.");
-      return;
+    if (!title.trim()) return toast.error('Title is required');
+    if (!description.trim()) return toast.error('Description is required');
+    if (budgetType === 'HOURLY' && (hourlyMinRate == null || hourlyMaxRate == null)) {
+      return toast.error('Please provide both min and max hourly rates');
+    }
+    if (budgetType === 'FIXED' && fixedPrice == null) {
+      return toast.error('Please provide a fixed price');
     }
 
-    const payload = {
-      clientId: "39f89cc0-2df7-4bb6-b503-09cb2c20616d",
-      title,
-      description,
+    const payload: JobPostingPayload = {
+      clientId: '39f89cc0-2df7-4bb6-b503-09cb2c20616d',
+      title: title.trim(),
+      description: description.trim(),
       budgetType,
-      hourlyMinRate: budgetType === 'HOURLY' ? hourlyMinRate : 0,
-      hourlyMaxRate: budgetType === 'HOURLY' ? hourlyMaxRate : 0,
-      fixedPrice: budgetType === 'FIXED' ? fixedPrice : 0,
+      hourlyMinRate: budgetType === 'HOURLY' ? hourlyMinRate : null,
+      hourlyMaxRate: budgetType === 'HOURLY' ? hourlyMaxRate : null,
+      fixedPrice: budgetType === 'FIXED' ? fixedPrice : null,
       projectDuration,
       experienceLevel,
       category: {
-        categoryId: subcategoryToId[selectedSubcategory],
+        categoryId: subcategoryToId?.[selectedSubcategory] ?? 0,
       },
-      jobPostingStatus,
+      jobPostingStatus: status,
+      skills,
+      questions: questions.map((q) => ({ question: q })),
     };
 
     try {
       await createJobPosting(payload);
-      console.log('Job posting created:', payload);
-      toast.success(`Job ${jobPostingStatus === 'DRAFT' ? 'saved as draft' : 'posted'} successfully!`);
-      resetForm();
-    } catch {
-      toast.error('Failed to submit job posting.');
+      toast.success(`Job ${status === 'DRAFT' ? 'drafted' : 'posted'} successfully!`);
+    } catch (err: any) {
+      toast.error(`Submission failed: ${err.message}`);
     }
   };
 
   return (
-    <div className="p-6 max-w-xl mx-auto bg-white rounded-xl shadow-md space-y-4">
-      <h2 className="text-xl font-bold">Create Job Posting</h2>
+    <form
+      onSubmit={(e) => handleSubmit(e, 'IN_REVIEW')}
+      className="max-w-3xl mx-auto p-6 bg-white rounded shadow space-y-4"
+    >
+      {/* Title */}
+      <div>
+        <label htmlFor="title" className="block text-sm font-medium">Title</label>
+        <input id="title" type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full border rounded p-2" />
+      </div>
 
-      <label htmlFor="title" className="block text-sm font-medium mb-1">Title</label>
-      <input
-        id="title"
-        type="text"
-        placeholder="Title"
-        className="w-full p-2 border rounded"
-        value={title}
-        onChange={e => {
-          setTitle(e.target.value);
-          setErrors(prev => ({ ...prev, title: validateField('title', e.target.value) }));
-        }}
-      />
-      {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
+      {/* Description */}
+      <div>
+        <label htmlFor="description" className="block text-sm font-medium">Description</label>
+        <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} className="w-full border rounded p-2" />
+      </div>
 
-      <label htmlFor="description" className="block text-sm font-medium mb-1">Description</label>
-      <textarea
-        id="description"
-        placeholder="Description"
-        className="w-full p-2 border rounded"
-        rows={4}
-        value={description}
-        onChange={e => {
-          setDescription(e.target.value);
-          setErrors(prev => ({ ...prev, description: validateField('description', e.target.value) }));
-        }}
-      />
-      {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+      {/* Budget Type */}
+      <div>
+        <label htmlFor="budgetType" className="block text-sm font-medium">Budget Type</label>
+        <select id="budgetType" value={budgetType} onChange={(e) => setBudgetType(e.target.value as 'HOURLY' | 'FIXED')} className="w-full border rounded p-2">
+          <option value="HOURLY">Hourly</option>
+          <option value="FIXED">Fixed</option>
+        </select>
+      </div>
 
-      <label htmlFor="budgetType" className="block text-sm font-medium mb-1">Budget Type</label>
-      <select
-        id="budgetType"
-        className="w-full p-2 border rounded"
-        value={budgetType}
-        onChange={e => setBudgetType(e.target.value as 'HOURLY' | 'FIXED')}
-      >
-        <option value="HOURLY">Hourly</option>
-        <option value="FIXED">Fixed</option>
-      </select>
-
-      {budgetType === 'HOURLY' && (
-        <div className="flex gap-2">
-          <div className="w-full">
-            <label htmlFor="minRate" className="block text-sm font-medium mb-1">Min Rate</label>
-            <input
-              id="minRate"
-              type="number"
-              placeholder="Min Rate"
-              className="w-full p-2 border rounded"
-              value={hourlyMinRate}
-              onChange={e => {
-                setHourlyMinRate(Number(e.target.value));
-                setErrors(prev => ({ ...prev, hourlyMinRate: validateField('hourlyMinRate', e.target.value) }));
-              }}
-            />
+      {/* Rate Inputs */}
+      {budgetType === 'HOURLY' ? (
+        <div className="flex gap-4">
+          <div className="w-1/2">
+            <label className="block text-sm font-medium">Min Rate</label>
+            <input type="number" value={hourlyMinRate ?? ''} onChange={(e) => setHourlyMinRate(Number(e.target.value))} className="w-full border rounded p-2" />
           </div>
-          <div className="w-full">
-            <label htmlFor="maxRate" className="block text-sm font-medium mb-1">Max Rate</label>
-            <input
-              id="maxRate"
-              type="number"
-              placeholder="Max Rate"
-              className="w-full p-2 border rounded"
-              value={hourlyMaxRate}
-              onChange={e => {
-                setHourlyMaxRate(Number(e.target.value));
-                setErrors(prev => ({ ...prev, hourlyMaxRate: validateField('hourlyMaxRate', e.target.value) }));
-              }}
-            />
+          <div className="w-1/2">
+            <label className="block text-sm font-medium">Max Rate</label>
+            <input type="number" value={hourlyMaxRate ?? ''} onChange={(e) => setHourlyMaxRate(Number(e.target.value))} className="w-full border rounded p-2" />
           </div>
         </div>
-      )}
-      {budgetType === 'HOURLY' && (errors.hourlyMinRate || errors.hourlyMaxRate) && (
-        <p className="text-red-500 text-sm">{errors.hourlyMinRate || errors.hourlyMaxRate}</p>
-      )}
-
-      {budgetType === 'FIXED' && (
-        <>
-          <label htmlFor="fixedPrice" className="block text-sm font-medium mb-1">Fixed Price</label>
-          <input
-            id="fixedPrice"
-            type="number"
-            placeholder="Fixed Price"
-            className="w-full p-2 border rounded"
-            value={fixedPrice}
-            onChange={e => {
-              setFixedPrice(Number(e.target.value));
-              setErrors(prev => ({ ...prev, fixedPrice: validateField('fixedPrice', e.target.value) }));
-            }}
-          />
-          {errors.fixedPrice && <p className="text-red-500 text-sm">{errors.fixedPrice}</p>}
-        </>
+      ) : (
+        <div>
+          <label className="block text-sm font-medium">Fixed Price</label>
+          <input type="number" value={fixedPrice ?? ''} onChange={(e) => setFixedPrice(Number(e.target.value))} className="w-full border rounded p-2" />
+        </div>
       )}
 
-      <label htmlFor="projectDuration" className="block text-sm font-medium mb-1">Project Duration</label>
-      <select
-        id="projectDuration"
-        className="w-full p-2 border rounded"
-        value={projectDuration}
-        onChange={e => setProjectDuration(e.target.value as 'SHORT_TERM' | 'LONG_TERM')}
-      >
-        <option value="SHORT_TERM">Short Term</option>
-        <option value="LONG_TERM">Long Term</option>
-      </select>
-
-      <label htmlFor="experienceLevel" className="block text-sm font-medium mb-1">Experience Level</label>
-      <select
-        id="experienceLevel"
-        className="w-full p-2 border rounded"
-        value={experienceLevel}
-        onChange={e => setExperienceLevel(e.target.value as 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCE')}
-      >
-        <option value="BEGINNER">Beginner</option>
-        <option value="INTERMEDIATE">Intermediate</option>
-        <option value="ADVANCED">Advanced</option>
-      </select>
-
-      <label htmlFor="category" className="block text-sm font-medium mb-1">Category</label>
-      <select
-        id="category"
-        className="w-full p-2 border rounded"
-        value={selectedSubcategory}
-        onChange={e => {
-          setSelectedSubcategory(e.target.value);
-          setErrors(prev => ({ ...prev, subcategory: validateField('subcategory', e.target.value) }));
-        }}
-      >
-        <option value="">Select Category</option>
-        {subcategories.map((sub) => (
-          <option key={sub} value={sub}>{sub}</option>
-        ))}
-      </select>
-      {errors.subcategory && <p className="text-red-500 text-sm">{errors.subcategory}</p>}
-
-      <div className="flex gap-4">
-        <button onClick={() => handleSubmit('DRAFT')} className="px-4 py-2 bg-gray-500 text-white rounded">Save as Draft</button>
-        <button onClick={() => handleSubmit('IN_REVIEW')} className="px-4 py-2 bg-blue-600 text-white rounded">Post Job</button>
+      {/* Duration */}
+      <div>
+        <label className="block text-sm font-medium">Project Duration</label>
+        <select value={projectDuration} onChange={(e) => setProjectDuration(e.target.value)} className="w-full border rounded p-2">
+          <option value="">-- Select --</option>
+          <option value="SHORT_TERM">Short Term</option>
+          <option value="MEDIUM_TERM">Medium Term</option>
+          <option value="LONG_TERM">Long Term</option>
+        </select>
       </div>
-    </div>
+
+      {/* Experience */}
+      <div>
+        <label className="block text-sm font-medium">Experience Level</label>
+        <select value={experienceLevel} onChange={(e) => setExperienceLevel(e.target.value)} className="w-full border rounded p-2">
+          <option value="">-- Select --</option>
+          <option value="BEGINNER">Beginner</option>
+          <option value="INTERMEDIATE">Intermediate</option>
+          <option value="ADVANCED">Advanced</option>
+        </select>
+      </div>
+
+      {/* Category */}
+      <div>
+        <label className="block text-sm font-medium">Category</label>
+        <select value={selectedSubcategory} onChange={(e) => setSelectedSubcategory(e.target.value)} className="w-full border rounded p-2">
+          <option value="">-- Select --</option>
+          {subcategories.map((subcategory) => (
+            <option key={subcategory} value={subcategory}>{subcategory}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Skills */}
+      <div>
+        <label className="block text-sm font-medium">Skills</label>
+        <div className="flex gap-2 mb-2">
+          <input type="text" value={newSkill} onChange={(e) => setNewSkill(e.target.value)} placeholder="Add skill" className="flex-grow p-2 border rounded" />
+          <button type="button" onClick={() => { if (newSkill.trim()) { setSkills([...skills, newSkill.trim()]); setNewSkill(''); } }} className="px-3 py-1 bg-green-500 text-white rounded">
+            Add
+          </button>
+        </div>
+        <ul className="mb-4 space-y-1">
+          {skills.map((skill, index) => (
+            <li key={index} className="text-sm text-gray-700">
+              {skill}
+              <button type="button" onClick={() => setSkills(skills.filter((_, i) => i !== index))} className="ml-2 text-red-500 text-xs">
+                Remove
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Screening Questions */}
+      <div className="mb-4">
+        <label className="font-medium">Screening Questions</label>
+        {questions.map((q, index) => (
+          <input
+            key={index}
+            type="text"
+            className="w-full border px-3 py-2 my-2"
+            placeholder={`Question ${index + 1}`}
+            value={q}
+            onChange={(e) => handleQuestionChange(index, e.target.value)}
+          />
+        ))}
+        <button type="button" onClick={addQuestion} className="text-blue-600 mt-2 hover:underline">
+          + Add Question
+        </button>
+      </div>
+
+      {/* Buttons */}
+      <div className="flex justify-between gap-4">
+        <button
+          type="button"
+          onClick={() => handleSubmit(null, 'DRAFT')}
+          className="w-1/2 bg-gray-500 text-white py-2 rounded"
+        >
+          Draft Job
+        </button>
+        <button
+          type="button"
+          onClick={() => handleSubmit(null, 'IN_REVIEW')}
+          className="w-1/2 bg-blue-600 text-white py-2 rounded"
+        >
+          Post Job
+        </button>
+      </div>
+    </form>
   );
 };
 

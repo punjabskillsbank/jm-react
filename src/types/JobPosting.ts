@@ -22,8 +22,10 @@ export interface JobPosting {
   projectDuration: string;
   experienceLevel: ExperienceLevel;
   jobPostingStatus: JobPostingStatus;
+  categoryId: number;
   category: Category;
   skills: string[];
+  questions: { question: string }[];
   createdAt: string | null;
   updatedAt: string | null;
 }

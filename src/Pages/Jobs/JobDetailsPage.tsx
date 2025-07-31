@@ -12,7 +12,7 @@ const JobDetailsPage = () => {
   useEffect(() => {
     const loadJob = async () => {
       try {
-        const data = await fetchJobById(Number(id));
+        const data = await fetchJobById(Number(id)); // convert id to number
         setJob(data);
       } catch (error) {
         console.error('Failed to fetch job:', error);
