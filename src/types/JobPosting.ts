@@ -15,17 +15,21 @@ export interface JobPosting {
   clientId: string;
   title: string;
   description: string;
-  budgetType: BudgetType;
-  hourlyMinRate: number | null;
-  hourlyMaxRate: number | null;
-  fixedPrice: number | null;
+  budgetType: 'HOURLY' | 'FIXED';
+  hourlyMinRate: number;
+  hourlyMaxRate: number;
+  fixedPrice: number;
   projectDuration: string;
-  experienceLevel: ExperienceLevel;
-  jobPostingStatus: JobPostingStatus;
-  categoryId: number;
-  category: Category;
+  experienceLevel: string;
+  jobPostingStatus: string;
+  category: {
+    categoryId: number;
+    category: string;
+    speciality: string;
+  };
   skills: string[];
-  questions: { question: string }[];
-  createdAt: string | null;
-  updatedAt: string | null;
+  questions: {
+    questionId: number;
+    question: string;
+  }[];
 }

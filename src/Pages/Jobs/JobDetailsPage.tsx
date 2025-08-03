@@ -12,7 +12,7 @@ const JobDetailsPage = () => {
   useEffect(() => {
     const loadJob = async () => {
       try {
-        const data = await fetchJobById(Number(id)); // convert id to number
+        const data = await fetchJobById(Number(id));
         setJob(data);
       } catch (error) {
         console.error('Failed to fetch job:', error);
@@ -30,19 +30,44 @@ const JobDetailsPage = () => {
     <div className="max-w-3xl mx-auto p-6 bg-white shadow rounded">
       <h1 className="text-2xl font-bold mb-2">{job.title}</h1>
       <p className="text-gray-700 mb-4">{job.description}</p>
+
       <div className="grid grid-cols-2 gap-4 text-sm mb-6">
-        <div><strong>Budget:</strong> {job.budgetType === 'FIXED' ? `$${job.fixedPrice}` : `$${job.hourlyMinRate}–${job.hourlyMaxRate}/hr`}</div>
+        <div>
+          <strong>Budget:</strong>{' '}
+          {job.budgetType === 'FIXED'
+            ? `$${job.fixedPrice}`
+            : `$${job.hourlyMinRate}–${job.hourlyMaxRate}/hr`}
+        </div>
         <div><strong>Experience:</strong> {job.experienceLevel}</div>
         <div><strong>Duration:</strong> {job.projectDuration}</div>
         <div><strong>Status:</strong> {job.jobPostingStatus}</div>
-        <div><strong>Category:</strong> {job.category?.category}</div>
-        <div>
-          <strong>Speciality:</strong>{' '}
-          {Array.isArray(job.category?.speciality)
-            ? job.category?.speciality.join(', ')
-            : job.category?.speciality}
-        </div>
+        <div><strong>Category:</strong> {job.category?.category || 'N/A'}</div>
+        <div><strong>Speciality:</strong> {job.category?.speciality || 'N/A'}</div>
       </div>
+
+      {/* Skills (optional if empty) */}
+      {job.skills && job.skills.length > 0 && (
+        <div className="mb-6">
+          <h3 className="font-semibold mb-1">Skills Required:</h3>
+          <ul className="list-disc list-inside text-sm text-gray-800">
+            {job.skills.map((skill, idx) => (
+              <li key={idx}>{skill}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Screening Questions */}
+      {job.questions && job.questions.length > 0 && (
+        <div className="mb-6">
+          <h3 className="font-semibold mb-1">Screening Questions:</h3>
+          <ul className="list-disc list-inside text-sm text-gray-800">
+            {job.questions.map((q, index) => (
+              <li key={index}>{q.question}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <button
         onClick={() => navigate(`/jobs/${job.jobPostingId}/apply`)}

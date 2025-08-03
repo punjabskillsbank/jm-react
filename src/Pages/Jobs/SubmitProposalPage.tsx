@@ -13,8 +13,9 @@ const SubmitProposalPage = () => {
   const [bidAmount, setBidAmount] = useState<number>(0);
   const [coverLetter, setCoverLetter] = useState('');
   const [error, setError] = useState('');
+  const [questionAnswers, setQuestionAnswers] = useState<Record<number, string>>({});
 
-  const freelancerId = localStorage.getItem('user_id'); 
+  const freelancerId = localStorage.getItem('user_id');
 
   useEffect(() => {
     const fetchJob = async () => {
@@ -32,6 +33,10 @@ const SubmitProposalPage = () => {
     fetchJob();
   }, [id]);
 
+  const handleAnswerChange = (questionId: number, answer: string) => {
+    setQuestionAnswers((prev) => ({ ...prev, [questionId]: answer }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -48,10 +53,13 @@ const SubmitProposalPage = () => {
         proposedBidAmount: bidAmount,
         proposalStatus: 'SUBMITTED',
         coverLetter,
+        questionAnswers: job.questions.map((q) => ({
+          questionId: q.questionId,
+          answer: questionAnswers[q.questionId] || '',
+        })),
       });
-
       alert('Proposal submitted!');
-      navigate('/my-proposals');
+      navigate('/');
     } catch (err) {
       console.error(err);
       setError('Failed to submit proposal');
@@ -68,8 +76,11 @@ const SubmitProposalPage = () => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Bid Amount ($)</label>
+          <label htmlFor="bidAmount" className="block text-sm font-medium mb-1">
+            Bid Amount ($)
+          </label>
           <input
+            id="bidAmount"
             type="number"
             value={bidAmount}
             onChange={(e) => setBidAmount(Number(e.target.value))}
@@ -79,8 +90,11 @@ const SubmitProposalPage = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-1">Cover Letter</label>
+          <label htmlFor="coverLetter" className="block text-sm font-medium mb-1">
+            Cover Letter
+          </label>
           <textarea
+            id="coverLetter"
             value={coverLetter}
             onChange={(e) => setCoverLetter(e.target.value)}
             required
@@ -88,6 +102,30 @@ const SubmitProposalPage = () => {
             rows={5}
           />
         </div>
+
+        {job.questions.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Screening Questions</h2>
+            {job.questions.map((q) => (
+              <div key={q.questionId}>
+                <label
+                  htmlFor={`question-${q.questionId}`}
+                  className="block font-medium mb-1"
+                >
+                  {q.question}
+                </label>
+                <textarea
+                  id={`question-${q.questionId}`}
+                  rows={3}
+                  className="w-full border p-2 rounded"
+                  value={questionAnswers[q.questionId] || ''}
+                  onChange={(e) => handleAnswerChange(q.questionId, e.target.value)}
+                  required
+                />
+              </div>
+            ))}
+          </div>
+        )}
 
         {error && <p className="text-red-500">{error}</p>}
 

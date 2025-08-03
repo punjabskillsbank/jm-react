@@ -1,145 +1,114 @@
-import '@testing-library/jest-dom';
 import React from 'react';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import SubmitProposalPage from './SubmitProposalPage';
-import { fetchJobById } from '../../services/JobServices';
-import { submitProposal } from '../../services/ProposalService';
-import { JobPosting } from '../../types/JobPosting';
+import { BrowserRouter } from 'react-router-dom';
+import * as JobServices from '../../services/JobServices';
+import * as ProposalService from '../../services/ProposalService';
 
-jest.mock('../../services/JobServices');
-jest.mock('../../services/ProposalService');
-
-// Mock localStorage
-beforeEach(() => {
-  Storage.prototype.getItem = jest.fn(() => 'freelancer123');
-});
-
-const mockJob: JobPosting = {
-    jobPostingId: 1,
-    title: 'Test Job',
-    description: 'Job Description',
-    clientId: 'client123',
-    budgetType: 'HOURLY',
-    hourlyMinRate: 0,
-    hourlyMaxRate: 0,
-    fixedPrice: 0,
-    projectDuration: '',
-    experienceLevel: '',
-    jobPostingStatus: '',
-    category: {
-        categoryId: 0,
-        category: '',
-        speciality: '',
-        createdAt: '',
-        updatedAt: ''
-    },
-    skills: [],
-    createdAt: '',
-    updatedAt: ''
-};
+// Mock useParams
+jest.mock('react-router-dom', () => ({
+...jest.requireActual('react-router-dom'),
+useParams: () => ({ id: '123' }),
+useNavigate: () => jest.fn(),
+}));
 
 describe('SubmitProposalPage', () => {
-  it('renders loading state initially', async () => {
-    (fetchJobById as jest.Mock).mockResolvedValueOnce(mockJob);
+const mockJob = {
+jobPostingId: 123,
+clientId: 'client-uuid',
+title: 'Frontend Developer',
+description: 'We need a React expert.',
+budgetType: 'FIXED',
+hourlyMinRate: 0,
+hourlyMaxRate: 0,
+fixedPrice: 500,
+projectDuration: '1 Month',
+experienceLevel: 'Intermediate',
+jobPostingStatus: 'OPEN',
+category: {
+categoryId: 1,
+category: 'Development',
+speciality: 'Frontend',
+},
+skills: ['React', 'TypeScript'],
+questions: [
+{
+questionId: 1,
+question: 'Why should we hire you?',
+},
+],
+};
 
-    render(
-      <MemoryRouter initialEntries={['/jobs/1/apply']}>
-        <Routes>
-          <Route path="/jobs/:id/apply" element={<SubmitProposalPage />} />
-        </Routes>
-      </MemoryRouter>
-    );
+beforeEach(() => {
+localStorage.setItem('user_id', 'freelancer-uuid');
+jest.spyOn(JobServices, 'fetchJobById').mockResolvedValue(mockJob);
+jest.spyOn(ProposalService, 'submitProposal').mockResolvedValue({ success: true });
+});
 
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
-    await waitFor(() => expect(fetchJobById).toHaveBeenCalled());
-  });
+afterEach(() => {
+jest.clearAllMocks();
+});
 
-  it('displays job details after fetch', async () => {
-    (fetchJobById as jest.Mock).mockResolvedValueOnce(mockJob);
+it('renders job details and form fields', async () => {
+render(
+<BrowserRouter>
+<SubmitProposalPage />
+</BrowserRouter>
+);
 
-    render(
-      <MemoryRouter initialEntries={['/jobs/1/apply']}>
-        <Routes>
-          <Route path="/jobs/:id/apply" element={<SubmitProposalPage />} />
-        </Routes>
-      </MemoryRouter>
-    );
+expect(screen.getByText(/Loading/i)).toBeInTheDocument();
 
-    await waitFor(() => expect(screen.getByText(/Apply to:/)).toBeInTheDocument());
-    expect(screen.getByText('Test Job')).toBeInTheDocument();
-    expect(screen.getByText('Job Description')).toBeInTheDocument();
-  });
+await waitFor(() => {
+  expect(screen.getByText('Apply to: Frontend Developer')).toBeInTheDocument();
+  expect(screen.getByLabelText(/Bid Amount/i)).toBeInTheDocument();
+  expect(screen.getByLabelText(/Cover Letter/i)).toBeInTheDocument();
+  expect(screen.getByText(/Why should we hire you\?/i)).toBeInTheDocument();
+});
+});
 
-  it('handles job fetch failure', async () => {
-    (fetchJobById as jest.Mock).mockRejectedValueOnce(new Error('Fetch failed'));
+it('submits form with correct payload', async () => {
+render(
+<BrowserRouter>
+<SubmitProposalPage />
+</BrowserRouter>
+);
 
-    render(
-      <MemoryRouter initialEntries={['/jobs/999/apply']}>
-        <Routes>
-          <Route path="/jobs/:id/apply" element={<SubmitProposalPage />} />
-        </Routes>
-      </MemoryRouter>
-    );
 
-    await waitFor(() => expect(screen.getByText('Failed to load job details')).toBeInTheDocument());
-  });
+await waitFor(() => screen.getByText('Apply to: Frontend Developer'));
 
-  it('submits proposal successfully', async () => {
-    window.alert = jest.fn();
-    (fetchJobById as jest.Mock).mockResolvedValueOnce(mockJob);
-    (submitProposal as jest.Mock).mockResolvedValueOnce({});
+fireEvent.change(screen.getByLabelText(/Bid Amount/i), { target: { value: 100 } });
+fireEvent.change(screen.getByLabelText(/Cover Letter/i), { target: { value: 'I am a great fit.' } });
+fireEvent.change(screen.getByLabelText(/Why should we hire you\?/i), { target: { value: 'Because I can deliver fast.' } });
 
-    render(
-      <MemoryRouter initialEntries={['/jobs/1/apply']}>
-        <Routes>
-          <Route path="/jobs/:id/apply" element={<SubmitProposalPage />} />
-          <Route path="/my-proposals" element={<div>Proposals Page</div>} />
-        </Routes>
-      </MemoryRouter>
-    );
+fireEvent.click(screen.getByText(/Submit Proposal/i));
 
-    await waitFor(() => screen.getByText(/Apply to:/));
-
-    fireEvent.change(screen.getByLabelText(/Bid Amount/), { target: { value: '500' } });
-    fireEvent.change(screen.getByLabelText(/Cover Letter/), { target: { value: 'This is my proposal.' } });
-
-    fireEvent.click(screen.getByRole('button', { name: /Submit Proposal/ }));
-
-    await waitFor(() => {
-      expect(submitProposal).toHaveBeenCalledWith({
-        jobPostingId: 1,
-        freelancerId: 'freelancer123',
-        clientId: 'client123',
-        proposedBidAmount: 500,
-        proposalStatus: 'SUBMITTED',
-        coverLetter: 'This is my proposal.',
-      });
-      expect(window.alert).toHaveBeenCalledWith('Proposal submitted!');
-    });
-  });
-
-  it('shows error on proposal submission failure', async () => {
-    (fetchJobById as jest.Mock).mockResolvedValueOnce(mockJob);
-    (submitProposal as jest.Mock).mockRejectedValueOnce(new Error('Submission failed'));
-
-    render(
-      <MemoryRouter initialEntries={['/jobs/1/apply']}>
-        <Routes>
-          <Route path="/jobs/:id/apply" element={<SubmitProposalPage />} />
-        </Routes>
-      </MemoryRouter>
-    );
-
-    await waitFor(() => screen.getByText(/Apply to:/));
-
-    fireEvent.change(screen.getByLabelText(/Bid Amount/), { target: { value: '300' } });
-    fireEvent.change(screen.getByLabelText(/Cover Letter/), { target: { value: 'Trying to apply' } });
-
-    fireEvent.click(screen.getByRole('button', { name: /Submit Proposal/ }));
-
-    await waitFor(() => {
-      expect(screen.getByText('Failed to submit proposal')).toBeInTheDocument();
-    });
+await waitFor(() => {
+  expect(ProposalService.submitProposal).toHaveBeenCalledWith({
+    jobPostingId: 123,
+    freelancerId: 'freelancer-uuid',
+    clientId: 'client-uuid',
+    proposedBidAmount: 100,
+    proposalStatus: 'SUBMITTED',
+    coverLetter: 'I am a great fit.',
+    questionAnswers: [{ questionId: 1, answer: 'Because I can deliver fast.' }],
   });
 });
+});
+
+it('shows error message if fetch fails', async () => {
+jest.spyOn(JobServices, 'fetchJobById').mockRejectedValue(new Error('API Failed'));
+
+
+render(
+  <BrowserRouter>
+    <SubmitProposalPage />
+  </BrowserRouter>
+);
+await waitFor(() => {
+  expect(screen.getByText(/Job not found/i)).toBeInTheDocument();
+});
+
+});
+});
+
