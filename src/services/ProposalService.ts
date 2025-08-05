@@ -11,16 +11,16 @@ export interface QuestionAnswer {
 }
 
 export interface ProposalPayload {
-jobPostingId: number;
-freelancerId: string;
-clientId: string;
-proposedBidAmount: number;
-proposalStatus: 'SUBMITTED' | 'DRAFT';
-coverLetter: string;
-questionAnswers: {
-questionId: number;
-answer: string;
-}[];
+    jobPostingId: number;
+    freelancerId: string;
+    clientId: string;
+    proposedBidAmount: number;
+    proposalStatus: 'SUBMITTED' | 'DRAFT';
+    coverLetter: string;
+    questionAnswers: {
+    questionId: number;
+    answer: string;
+  }[];
 }
 
 export const submitProposal = async (payload: ProposalPayload) => {

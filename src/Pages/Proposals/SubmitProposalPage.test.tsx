@@ -8,10 +8,11 @@ import * as ProposalService from '../../services/ProposalService';
 
 // Mock useParams
 jest.mock('react-router-dom', () => ({
-...jest.requireActual('react-router-dom'),
-useParams: () => ({ id: '123' }),
-useNavigate: () => jest.fn(),
-}));
+    ...jest.requireActual('react-router-dom'),
+    useParams: () => ({ id: '123' }),
+    useNavigate: () => jest.fn(),
+  })
+);
 
 describe('SubmitProposalPage', () => {
 const mockJob = {
