@@ -37,7 +37,7 @@ const JobCarousel = () => {
           (a: JobPosting, b: JobPosting) =>
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
         )
-        .slice(0, 10); 
+        .slice(0, 10);
       setJobs(sorted);
     };
     fetchJobs();
@@ -66,11 +66,10 @@ const JobCarousel = () => {
         {jobs.map((job) => (
           <div
             key={job.jobPostingId}
-            className="keen-slider__slide bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-xl transition-all duration-300 cursor-pointer h-full"
+            className="keen-slider__slide bg-white rounded-2xl p-6 shadow-md border border-gray-100 hover:shadow-xl transition-all duration-300 cursor-pointer h-full flex flex-col justify-between"
             style={{ minWidth: 0 }}
-            onClick={() => navigate(`/jobs/${job.jobPostingId}`)}
           >
-            <div className="flex flex-col h-full">
+            <div onClick={() => navigate(`/jobs/${job.jobPostingId}`)}>
               <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">
                 {job.title}
               </h3>
@@ -80,12 +79,19 @@ const JobCarousel = () => {
               <p className="text-sm text-gray-600 line-clamp-3 mb-4">
                 {job.description}
               </p>
-              <div className="text-sm font-semibold text-green-600 mt-auto">
+              <div className="text-sm font-semibold text-green-600">
                 {job.budgetType === 'HOURLY'
                   ? `$${job.hourlyMinRate}–${job.hourlyMaxRate}/hr`
                   : `$${job.fixedPrice} fixed`}
               </div>
             </div>
+
+            <button
+              className="mt-4 bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 transition"
+              onClick={() => navigate(`/jobs/${job.jobPostingId}/apply`)}
+            >
+              Apply
+            </button>
           </div>
         ))}
       </div>

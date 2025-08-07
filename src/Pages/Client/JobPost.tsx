@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
-import { fetchCategories } from '../../services/JobPostService';
-import { createJobPosting, JobPostingPayload } from '../../services/JobPostService';
+import { fetchCategories, createJobPosting, JobPostingPayload } from '../../services/JobPostService';
+
 const JobPost: React.FC = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -17,8 +17,6 @@ const JobPost: React.FC = () => {
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState('');
   const [questions, setQuestions] = useState<string[]>([]);
-  const [newQuestion, setNewQuestion] = useState('');
-  const [jobPostingStatus, setJobPostingStatus] = useState<'DRAFT' | 'IN_REVIEW'>('IN_REVIEW');
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -42,47 +40,62 @@ const JobPost: React.FC = () => {
     loadCategories();
   }, []);
 
-  
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  if (!title.trim()) return toast.error('Title is required');
-  if (!description.trim()) return toast.error('Description is required');
-  if (budgetType === 'HOURLY' && (hourlyMinRate == null || hourlyMaxRate == null)) {
-    return toast.error('Please provide both min and max hourly rates');
-  }
-  if (budgetType === 'FIXED' && fixedPrice == null) {
-    return toast.error('Please provide a fixed price');
-  }
-
-  const payload: JobPostingPayload = {
-    clientId: '39f89cc0-2df7-4bb6-b503-09cb2c20616d',
-    title: title.trim(),
-    description: description.trim(),
-    budgetType,
-    hourlyMinRate: budgetType === 'HOURLY' ? hourlyMinRate : null,
-    hourlyMaxRate: budgetType === 'HOURLY' ? hourlyMaxRate : null,
-    fixedPrice: budgetType === 'FIXED' ? fixedPrice : null,
-    projectDuration,
-    experienceLevel,
-    categoryId: subcategoryToId?.[selectedSubcategory] ?? 0,
-    jobPostingStatus,
-    skills: skills,
-    questions: questions,
+  const addQuestion = () => {
+    setQuestions([...questions, '']);
   };
 
-  try {
-    await createJobPosting(payload);
-    toast.success('Job posted successfully!');
-    // Optionally, reset form here
-  } catch (err: any) {
-    toast.error(`Submission failed: ${err.message}`);
-  }
-};
-  const formRef = React.useRef<HTMLFormElement>(null);
+  const handleQuestionChange = (index: number, value: string) => {
+    const newQuestions = [...questions];
+    newQuestions[index] = value;
+    setQuestions(newQuestions);
+  };
+
+  const handleSubmit = async (
+    e: React.FormEvent | null,
+    status: 'DRAFT' | 'IN_REVIEW'
+  ) => {
+    if (e) e.preventDefault();
+
+    if (!title.trim()) return toast.error('Title is required');
+    if (!description.trim()) return toast.error('Description is required');
+    if (budgetType === 'HOURLY' && (hourlyMinRate == null || hourlyMaxRate == null)) {
+      return toast.error('Please provide both min and max hourly rates');
+    }
+    if (budgetType === 'FIXED' && fixedPrice == null) {
+      return toast.error('Please provide a fixed price');
+    }
+
+    const payload: JobPostingPayload = {
+      clientId: '39f89cc0-2df7-4bb6-b503-09cb2c20616d',
+      title: title.trim(),
+      description: description.trim(),
+      budgetType,
+      hourlyMinRate: budgetType === 'HOURLY' ? hourlyMinRate : null,
+      hourlyMaxRate: budgetType === 'HOURLY' ? hourlyMaxRate : null,
+      fixedPrice: budgetType === 'FIXED' ? fixedPrice : null,
+      projectDuration,
+      experienceLevel,
+      category: {
+        categoryId: subcategoryToId?.[selectedSubcategory] ?? 0,
+      },
+      jobPostingStatus: status,
+      skills,
+      questions: questions.map((q) => ({ question: q })),
+    };
+
+    try {
+      await createJobPosting(payload);
+      toast.success(`Job ${status === 'DRAFT' ? 'drafted' : 'posted'} successfully!`);
+    } catch (err: any) {
+      toast.error(`Submission failed: ${err.message}`);
+    }
+  };
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit} className="max-w-3xl mx-auto p-6 bg-white rounded shadow space-y-4">
+    <form
+      onSubmit={(e) => handleSubmit(e, 'IN_REVIEW')}
+      className="max-w-3xl mx-auto p-6 bg-white rounded shadow space-y-4"
+    >
       {/* Title */}
       <div>
         <label htmlFor="title" className="block text-sm font-medium">Title</label>
@@ -104,51 +117,51 @@ const handleSubmit = async (e: React.FormEvent) => {
         </select>
       </div>
 
-      {/* Hourly or Fixed Rates */}
+      {/* Rate Inputs */}
       {budgetType === 'HOURLY' ? (
         <div className="flex gap-4">
           <div className="w-1/2">
-            <label htmlFor="hourlyMinRate" className="block text-sm font-medium">Min Rate</label>
-            <input id="hourlyMinRate" type="number" value={hourlyMinRate ?? ''} onChange={(e) => setHourlyMinRate(Number(e.target.value))} className="w-full border rounded p-2" />
+            <label className="block text-sm font-medium">Min Rate</label>
+            <input type="number" value={hourlyMinRate ?? ''} onChange={(e) => setHourlyMinRate(Number(e.target.value))} className="w-full border rounded p-2" />
           </div>
           <div className="w-1/2">
-            <label htmlFor="hourlyMaxRate" className="block text-sm font-medium">Max Rate</label>
-            <input id="hourlyMaxRate" type="number" value={hourlyMaxRate ?? ''} onChange={(e) => setHourlyMaxRate(Number(e.target.value))} className="w-full border rounded p-2" />
+            <label className="block text-sm font-medium">Max Rate</label>
+            <input type="number" value={hourlyMaxRate ?? ''} onChange={(e) => setHourlyMaxRate(Number(e.target.value))} className="w-full border rounded p-2" />
           </div>
         </div>
       ) : (
         <div>
-          <label htmlFor="fixedPrice" className="block text-sm font-medium">Fixed Price</label>
-          <input id="fixedPrice" type="number" value={fixedPrice ?? ''} onChange={(e) => setFixedPrice(Number(e.target.value))} className="w-full border rounded p-2" />
+          <label className="block text-sm font-medium">Fixed Price</label>
+          <input type="number" value={fixedPrice ?? ''} onChange={(e) => setFixedPrice(Number(e.target.value))} className="w-full border rounded p-2" />
         </div>
       )}
 
-      {/* Project Duration */}
+      {/* Duration */}
       <div>
-        <label htmlFor="projectDuration" className="block text-sm font-medium">Project Duration</label>
-        <select id="projectDuration" value={projectDuration} onChange={(e) => setProjectDuration(e.target.value)} className="w-full border rounded p-2">
-          <option value="">-- Select Duration --</option>
+        <label className="block text-sm font-medium">Project Duration</label>
+        <select value={projectDuration} onChange={(e) => setProjectDuration(e.target.value)} className="w-full border rounded p-2">
+          <option value="">-- Select --</option>
           <option value="SHORT_TERM">Short Term</option>
           <option value="MEDIUM_TERM">Medium Term</option>
           <option value="LONG_TERM">Long Term</option>
         </select>
       </div>
 
-      {/* Experience Level */}
+      {/* Experience */}
       <div>
-        <label htmlFor="experienceLevel" className="block text-sm font-medium">Experience Level</label>
-        <select id="experienceLevel" value={experienceLevel} onChange={(e) => setExperienceLevel(e.target.value)} className="w-full border rounded p-2">
-          <option value="">-- Select Experience Level --</option>
+        <label className="block text-sm font-medium">Experience Level</label>
+        <select value={experienceLevel} onChange={(e) => setExperienceLevel(e.target.value)} className="w-full border rounded p-2">
+          <option value="">-- Select --</option>
           <option value="BEGINNER">Beginner</option>
           <option value="INTERMEDIATE">Intermediate</option>
           <option value="ADVANCED">Advanced</option>
         </select>
       </div>
 
-      {/* Category Selector */}
+      {/* Category */}
       <div>
-        <label htmlFor="selectedSubcategory" className="block text-sm font-medium">Category</label>
-        <select id="selectedSubcategory" value={selectedSubcategory} onChange={(e) => setSelectedSubcategory(e.target.value)} className="w-full border rounded p-2">
+        <label className="block text-sm font-medium">Category</label>
+        <select value={selectedSubcategory} onChange={(e) => setSelectedSubcategory(e.target.value)} className="w-full border rounded p-2">
           <option value="">-- Select --</option>
           {subcategories.map((subcategory) => (
             <option key={subcategory} value={subcategory}>{subcategory}</option>
@@ -158,9 +171,9 @@ const handleSubmit = async (e: React.FormEvent) => {
 
       {/* Skills */}
       <div>
-        <label htmlFor="newSkill" className="block text-sm font-medium">Skills</label>
+        <label className="block text-sm font-medium">Skills</label>
         <div className="flex gap-2 mb-2">
-          <input id="newSkill" type="text" value={newSkill} onChange={(e) => setNewSkill(e.target.value)} placeholder="Add skill" className="flex-grow p-2 border rounded" />
+          <input type="text" value={newSkill} onChange={(e) => setNewSkill(e.target.value)} placeholder="Add skill" className="flex-grow p-2 border rounded" />
           <button type="button" onClick={() => { if (newSkill.trim()) { setSkills([...skills, newSkill.trim()]); setNewSkill(''); } }} className="px-3 py-1 bg-green-500 text-white rounded">
             Add
           </button>
@@ -178,47 +191,35 @@ const handleSubmit = async (e: React.FormEvent) => {
       </div>
 
       {/* Screening Questions */}
-      <div>
-        <label htmlFor="newQuestion" className="block text-sm font-medium">Screening Questions</label>
-        <div className="flex gap-2 mb-2">
-          <input id="newQuestion" type="text" value={newQuestion} onChange={(e) => setNewQuestion(e.target.value)} placeholder="Add question" className="flex-grow p-2 border rounded" />
-          <button type="button" onClick={() => { if (newQuestion.trim()) { setQuestions([...questions, newQuestion.trim()]); setNewQuestion(''); } }} className="px-3 py-1 bg-green-500 text-white rounded">
-            Add
-          </button>
-        </div>
-        <ul className="mb-4 space-y-1">
-          {questions.map((q, index) => (
-            <li key={index} className="text-sm text-gray-700">
-              {q}
-              <button type="button" onClick={() => setQuestions(questions.filter((_, i) => i !== index))} className="ml-2 text-red-500 text-xs">
-                Remove
-              </button>
-            </li>
-          ))}
-        </ul>
+      <div className="mb-4">
+        <label className="font-medium">Screening Questions</label>
+        {questions.map((q, index) => (
+          <input
+            key={index}
+            type="text"
+            className="w-full border px-3 py-2 my-2"
+            placeholder={`Question ${index + 1}`}
+            value={q}
+            onChange={(e) => handleQuestionChange(index, e.target.value)}
+          />
+        ))}
+        <button type="button" onClick={addQuestion} className="text-blue-600 mt-2 hover:underline">
+          + Add Question
+        </button>
       </div>
-      {/* Submit Buttons */}
+
+      {/* Buttons */}
       <div className="flex justify-between gap-4">
         <button
           type="button"
-          onClick={async () => {
-            setJobPostingStatus('DRAFT');
-            setTimeout(() => {
-              formRef.current?.requestSubmit();
-            }, 0);
-          }}
+          onClick={() => handleSubmit(null, 'DRAFT')}
           className="w-1/2 bg-gray-500 text-white py-2 rounded"
         >
           Draft Job
         </button>
         <button
           type="button"
-          onClick={async () => {
-            setJobPostingStatus('IN_REVIEW');
-            setTimeout(() => {
-              formRef.current?.requestSubmit();
-            }, 0);
-          }}
+          onClick={() => handleSubmit(null, 'IN_REVIEW')}
           className="w-1/2 bg-blue-600 text-white py-2 rounded"
         >
           Post Job
