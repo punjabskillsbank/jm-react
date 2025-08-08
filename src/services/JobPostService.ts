@@ -47,14 +47,21 @@ throw new Error(error?.response?.data?.message || 'Failed to create job posting'
 export const uploadFilesToS3 = async (files: File[], jobId: number): Promise<string[]> => {
   const uploadedKeys: string[] = [];
 
-  for (const file of files) {
+  const fileNames = files.map(file => file.name);
+
+  // 🔁 Send POST to get presigned URLs
+  const presignRes = await axios.post(
+    `${config.baseURLs.jobPosting}/api/presigned_url/upload/job_attachment`,
+    { jobId, fileNames }
+  );
+
+  const urls = presignRes.data as { uploadUrl: string; s3Key: string }[];
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const { uploadUrl, s3Key } = urls[i];
+
     try {
-      const presignRes = await axios.get(`${config.baseURLs.jobPosting}/api/presigned_url/upload/job_attachment`, {
-        params: { jobId, contentType: file.type },
-      });
-
-      const { uploadUrl, s3Key } = presignRes.data;
-
       await axios.put(uploadUrl, file, {
         headers: { 'Content-Type': file.type },
       });
