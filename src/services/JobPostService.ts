@@ -17,20 +17,23 @@ throw new Error(error?.response?.data?.message || 'Failed to fetch categories');
 };
 
 export interface JobPostingPayload {
-clientId: string;
-title: string;
-description: string;
-budgetType: 'HOURLY' | 'FIXED';
-hourlyMinRate: number;
-hourlyMaxRate: number;
-fixedPrice: number;
-projectDuration: string;
-experienceLevel: string;
-categoryId: number;
-jobPostingStatus: string;
-//skills: string[];
-questions: string[];
+  clientId: string;
+  title: string;
+  description: string;
+  budgetType: 'HOURLY' | 'FIXED';
+  hourlyMinRate: number | null;
+  hourlyMaxRate: number | null;
+  fixedPrice: number | null;
+  projectDuration: string;
+  experienceLevel: string;
+  category: {
+    categoryId: number;
+  };
+  jobPostingStatus: 'DRAFT' | 'IN_REVIEW';
+  skills: string[];
+  questions: { question: string }[];
 }
+
 
 // Create job posting
 export const createJobPosting = async (payload: JobPostingPayload) => {
