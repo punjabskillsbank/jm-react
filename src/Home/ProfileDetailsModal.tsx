@@ -1,17 +1,86 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAddressCard, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { useMemo } from "react";
 
 export default function ProfileDetailsModal({ signupData, timezone, onClose }) {
+  
+  // Calculate completion percentage
+  const completionPercentage = useMemo(() => {
+    let totalFields = 0;
+    let filledFields = 0;
+
+    const checkField = (value) => {
+      totalFields++;
+      if (value && value !== "N/A" && value !== "") filledFields++;
+    };
+
+    // Personal info
+    checkField(signupData.name);
+    checkField(signupData.title);
+    checkField(signupData.bio);
+    checkField(signupData.email);
+    checkField(signupData.phone);
+    checkField(signupData.country);
+    checkField(signupData.address);
+    checkField(signupData.city);
+    checkField(signupData.state);
+    checkField(signupData.zip);
+    checkField(signupData.hourlyRate);
+    checkField(timezone);
+
+    // Profile picture
+    totalFields++;
+    if (signupData.photo) filledFields++;
+
+    // Certificates, education, and experience (counts if at least one exists)
+    totalFields++;
+    if (signupData.certificate?.length) filledFields++;
+
+    totalFields++;
+    if (signupData.education?.length) filledFields++;
+
+    totalFields++;
+    if (signupData.experience?.length) filledFields++;
+
+    return Math.round((filledFields / totalFields) * 100);
+  }, [signupData, timezone]);
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center p-4">
       <div className="max-w-4xl w-full bg-white rounded-lg shadow-lg p-6 overflow-y-auto max-h-[90vh] relative">
+        
+        {/* Close Button */}
         <button className="absolute top-3 right-4 text-xl text-gray-600" onClick={onClose}>
           <FontAwesomeIcon icon={faTimes} />
         </button>
+
+        {/* Header */}
         <h2 className="text-3xl font-bold mb-4 text-center">
           <FontAwesomeIcon icon={faAddressCard} /> Profile Details
         </h2>
 
+        {/* Profile Completion Bar */}
+        <div className="mb-6">
+          <p className="text-sm font-medium mb-1">Profile Completion: {completionPercentage}%</p>
+          <div className="w-full bg-gray-200 rounded-full h-3">
+            <div
+              role="progressbar"
+              aria-valuenow={completionPercentage}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              className={`h-3 rounded-full ${
+                completionPercentage < 50
+                  ? "bg-red-500"
+                  : completionPercentage < 80
+                  ? "bg-yellow-500"
+                  : "bg-green-500"
+              }`}
+              style={{ width: `${completionPercentage}%` }}
+            ></div>
+          </div>
+        </div>
+
+        {/* Profile Details */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Personal Details */}
           <div className="border p-4 rounded">
@@ -97,9 +166,7 @@ export default function ProfileDetailsModal({ signupData, timezone, onClose }) {
                     {job.budget_type === "fixed" ? (
                       <p><strong>Fixed Price:</strong> ${job.fixed_price}</p>
                     ) : (
-                      <>
-                        <p><strong>Hourly Rate:</strong> ${job.hourly_min_rate} - ${job.hourly_max_rate}</p>
-                      </>
+                      <p><strong>Hourly Rate:</strong> ${job.hourly_min_rate} - ${job.hourly_max_rate}</p>
                     )}
                     <p><strong>Duration:</strong> {job.project_duration}</p>
                     <p><strong>Level:</strong> {job.experience_level}</p>
