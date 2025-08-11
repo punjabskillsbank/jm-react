@@ -88,13 +88,23 @@ const JobPost: React.FC = () => {
       const response = await createJobPosting(payload);
       const jobId = response.jobPostingId;
 
-                  const fileURLs = attachments.length > 0
-                    ? await uploadFilesToS3(attachments, jobId)
-                    : [];
+       if (attachments.length > 0) {
+          const { uploadedKeys, failedFiles } = await uploadFilesToS3(attachments, jobId);
 
-                  if (fileURLs.length > 0) {
-                    await saveAttachmentUrls(jobId, fileURLs);
-                  }
+          // Save successfully uploaded files
+          if (uploadedKeys.length > 0) {
+            await saveAttachmentUrls(jobId, uploadedKeys);
+          }
+
+          // If any failed after retries, mark as draft
+          if (failedFiles.length > 0) {
+            await setJobPostingToDraft(jobId);
+            toast.error(
+              `Some files failed to upload after ${S3_UPLOAD_RETRIES_NUM} attempts: ${failedFiles.join(', ')}. Job moved to Draft.`
+            );
+            return;
+          }
+        }
       toast.success(`Job ${status === 'DRAFT' ? 'drafted' : 'posted'} successfully!`);
     } catch (err: any) {
       toast.error(`Submission failed: ${err.message}`);
