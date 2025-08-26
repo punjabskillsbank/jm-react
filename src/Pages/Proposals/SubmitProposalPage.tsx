@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchJobById } from '../../services/JobServices';
-import { submitProposal } from '../../services/ProposalService';
+import { submitProposal, uploadFilesToS3, saveAttachmentUrls, S3_UPLOAD_RETRIES_NUM } from '../../services/ProposalService';
 import { JobPosting } from '../../types/JobPosting';
+import { toast } from 'react-toastify';
 
 const SubmitProposalPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +15,8 @@ const SubmitProposalPage = () => {
   const [coverLetter, setCoverLetter] = useState('');
   const [error, setError] = useState('');
   const [questionAnswers, setQuestionAnswers] = useState<Record<number, string>>({});
+     const [attachments, setAttachments] = useState<File[]>([]);
+
 
   const freelancerId = localStorage.getItem('user_id');
 
@@ -39,6 +42,7 @@ const SubmitProposalPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
 
     if (!freelancerId || !job) {
       setError('Missing job or freelancer info');
@@ -46,7 +50,8 @@ const SubmitProposalPage = () => {
     }
 
     try {
-      await submitProposal({
+      // First submit the proposal
+      const response = await submitProposal({
         jobPostingId: job.jobPostingId,
         freelancerId,
         clientId: job.clientId,
@@ -58,11 +63,49 @@ const SubmitProposalPage = () => {
           answer: questionAnswers[q.questionId] || '',
         })),
       });
-      alert('Proposal submitted!');
+
+      console.log('Proposal submission response:', response);
+
+      // Ensure we have a valid response
+      if (!response) {
+        throw new Error('No response received from server');
+      }
+      
+      // The server returns the proposal data directly, so we can use the response as is
+      // and we don't need to extract a separate proposalId
+      const proposal = response;
+      
+      if (!proposal) {
+        console.error('Invalid response format. Expected proposal data in:', response);
+        throw new Error('Invalid response format from server');
+      }
+
+      // If there are attachments, upload them to S3
+      if (attachments.length > 0) {
+        try {
+          const { uploadedKeys, failedFiles } = await uploadFilesToS3(attachments, proposal.proposalId);
+          
+          // Save the successfully uploaded file URLs
+          if (uploadedKeys.length > 0) {
+            await saveAttachmentUrls(proposal.proposalId, uploadedKeys);
+          }
+
+          if (failedFiles.length > 0) {
+            toast.warning(`Some files failed to upload: ${failedFiles.join(', ')}`);
+          }
+        } catch (uploadError) {
+          console.error('Error uploading files:', uploadError);
+          toast.error('Proposal was submitted but there was an error uploading some files');
+        }
+      }
+
+      console.log('Proposal submitted successfully!', response);
+      toast.success('Proposal submitted successfully!');
       navigate('/');
     } catch (err) {
-      console.error(err);
-      setError('Failed to submit proposal');
+      console.error('Proposal submission error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to submit proposal');
+      toast.error('Failed to submit proposal');
     }
   };
 
@@ -102,6 +145,41 @@ const SubmitProposalPage = () => {
             rows={5}
           />
         </div>
+
+        {/* Job Posting Attachement*/}
+    <label className="block text-sm font-medium mb-1">Attachments (Max 10 files)</label>
+          <input
+            type="file"
+            multiple
+            accept="*"
+            onChange={(e) => {
+              const newFiles = Array.from(e.target.files || []);
+
+              const combinedFiles = [...attachments, ...newFiles];
+
+              if (combinedFiles.length > 10) {
+                toast.error('You can upload up to 10 files in total.');
+                return;
+              }
+              setAttachments(combinedFiles);
+            }}
+            className="w-full p-2 border rounded"
+          />
+          <ul className="text-sm mt-2">
+            {attachments.map((file, idx) => (
+              <li key={idx} className="flex justify-between items-center">
+                {file.name}
+                <button
+                  className="ml-2 text-red-500 text-xs"
+                  onClick={() => {
+                    setAttachments(prev => prev.filter((_, i) => i !== idx));
+                  }}
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
 
         {job.questions.length > 0 && (
           <div className="space-y-4">

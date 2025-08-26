@@ -27,7 +27,7 @@ export interface JobPosting {
     category: string;
     speciality: string;
   };
-  skills: string[];
+  skills: (string | { skillId: number; skill: string })[];
   questions: {
     questionId: number;
     question: string;
