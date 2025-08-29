@@ -1,29 +1,30 @@
 // src/AppRoutes.tsx
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter,Routes, Route } from "react-router-dom";
 import "../index.css";
-import Step1 from "../pages/Freelancer/Signup/Step01_Client-Freelancer";
-import Step2 from "../pages/Freelancer/Signup/Step02_Get_Started";
-import Step3 from "../pages/Freelancer/Signup/Step03_Experience";
-import Step4 from "../pages/Freelancer/Signup/Step04_Work_Preference";
-import Step5 from "../pages/Freelancer/Signup/Step05_Create_Your_Profile";
-import Step6 from "../pages/Freelancer/Signup/Step06_Work_Category";
-import Step7 from "../pages/Freelancer/Signup/Step07_Title";
-import Step8 from "../pages/Freelancer/Signup/Step08_Skills";
-import Step9 from "../pages/Freelancer/Signup/Step09_Work_Experience";
-import Step10 from "../pages/Freelancer/Signup/Step10_Hourly_Rate";
-import Step11 from "../pages/Freelancer/Signup/Step11_Education";
-import Step12 from "../pages/Freelancer/Signup/Step12_ABC_Member";
-import Step13 from "../pages/Freelancer/Signup/Step13_Bio";
-import Step14 from "../pages/Freelancer/Signup/Step14_Certificates";
-import Step15 from "../pages/Freelancer/Signup/Step15_Details";
-import ProfileReview from "../pages/Freelancer/Profile/ProfileReview";
+import Step1 from "../Pages/Freelancer/Signup/Step01_Client-Freelancer";
+import Step2 from "../Pages/Freelancer/Signup/Step02_Get_Started";
+import Step3 from "../Pages/Freelancer/Signup/Step03_Experience";
+import Step4 from "../Pages/Freelancer/Signup/Step04_Work_Preference";
+import Step5 from "../Pages/Freelancer/Signup/Step05_Create_Your_Profile";
+import Step6 from "../Pages/Freelancer/Signup/Step06_Work_Category";
+import Step7 from "../Pages/Freelancer/Signup/Step07_Title";
+import Step8 from "../Pages/Freelancer/Signup/Step08_Skills";
+import Step9 from "../Pages/Freelancer/Signup/Step09_Work_Experience";
+import Step10 from "../Pages/Freelancer/Signup/Step10_Hourly_Rate";
+import Step11 from "../Pages/Freelancer/Signup/Step11_Education";
+import Step12 from "../Pages/Freelancer/Signup/Step12_ABC_Member";
+import Step13 from "../Pages/Freelancer/Signup/Step13_Bio";
+import Step14 from "../Pages/Freelancer/Signup/Step14_Certificates";
+import Step15 from "../Pages/Freelancer/Signup/Step15_Details";
+import ProfileReview from "../Pages/Freelancer/Profile/ProfileReview";
 import Dashboard from "../Home/Dashboard";
 import Landing from "../Home/Landing";
-import JobPost from '../pages/Client/JobPost';
-import JobDetailsPage from "../pages/Jobs/JobDetailsPage";
+import JobPost from '../Pages/Client/JobPost';
+import JobDetailsPage from "../Pages/Jobs/JobDetailsPage";
 import JobCarousel from "../components/JobCarousel";
-import OpenJobsPage from "../pages/Jobs/OpenJobsPage";
-import SubmitProposalPage from "../pages/Proposals/SubmitProposalPage";
+import OpenJobsPage from "../Pages/Jobs/OpenJobsPage";
+import SubmitProposalPage from "../Pages/Proposals/SubmitProposalPage";
+import PendingFreelancer from "../Pages/Admin/PendingFreelancers";  
 const AppRoutes = () => {
   return (
     <Routes>
@@ -51,9 +52,9 @@ const AppRoutes = () => {
       <Route path="/jobs" element={<OpenJobsPage />} />
       <Route path="/job-carousel" element={<JobCarousel  />} />
       <Route path="/jobs/:id/apply" element={<SubmitProposalPage />} />
+      <Route path="/admin/pending-freelancers" element={<PendingFreelancer />} />
     </Routes>
   );
 };
 
 export default AppRoutes;
-export { AppRoutes };
