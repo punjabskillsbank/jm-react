@@ -1,8 +1,17 @@
-import axios from "axios";
-
-const API_BASE = "http://localhost:8080/api/admin_management"; // keep base clean
+import local from "../config/localConfig";
+import common from "../config/commonConfig";
 
 export const getPendingFreelancers = async () => {
-  const res = await axios.get(`${API_BASE}/pending_freelancers`);
-  return res.data;
+  try {
+    const response = await fetch(
+      `${local.baseURLs.adminManagement}${common.endpoints.pendingFreelancers}`
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch pending freelancers");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching pending freelancers:", error);
+    throw error;
+  }
 };
