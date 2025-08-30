@@ -8,12 +8,12 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { getPendingFreelancers } from "../../services/freelancerService";
-const [loading, setLoading] = useState(true);
+
 
 export default function PendingFreelancers() {
   const [freelancers, setFreelancers] = useState([]);
   const [selectedColumns, setSelectedColumns] = useState([]);
-
+  const [loading, setLoading] = useState(true);
   // All available columns
   const allColumns = [
     { field: "freelancerId", headerName: "ID", width: 250 },
