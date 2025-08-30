@@ -52,7 +52,7 @@ const AppRoutes = () => {
       <Route path="/jobs" element={<OpenJobsPage />} />
       <Route path="/job-carousel" element={<JobCarousel  />} />
       <Route path="/jobs/:id/apply" element={<SubmitProposalPage />} />
-      <Route path="/admin/pending-freelancers" element={<PendingFreelancer />} />
+      <Route path="/Admin/PendingFreelancers" element={<PendingFreelancer />} />
     </Routes>
   );
 };

@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
   Checkbox,
   FormControlLabel,
-  Typography,
   Paper,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
@@ -90,6 +88,7 @@ useEffect(() => {
           Pending Freelancers
         </h2>
         <div className="h-[600px]">
+          
           {finalColumns.length === 0 ? (
             // Show placeholder if no columns selected
             <Paper
