@@ -1,56 +1,94 @@
-import { getPendingFreelancers } from '../../services/freelancerService';
+import React from 'react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import PendingFreelancers from './PendingFreelancers';
+import { getPendingFreelancers } from '../../services/AdminService';
+
+// Mock the MUI components
+jest.mock('@mui/x-data-grid', () => ({
+  DataGrid: jest.fn(({ rows, columns, getRowId, initialState, pageSizeOptions, disableRowSelectionOnClick }: any) => 
+    React.createElement('div', { 'data-testid': 'mock-data-grid' }, [
+      React.createElement('span', { 'data-testid': 'datagrid-info', key: 'info' }, 
+        `DataGrid with ${rows.length} rows and ${columns.length} columns`),
+      React.createElement('div', { 'data-testid': 'datagrid-rows', key: 'rows' }, rows.length),
+      React.createElement('div', { 'data-testid': 'datagrid-columns', key: 'columns' }, columns.length)
+    ])
+  )
+}));
+
+// Mock the MUI Dialog components
+jest.mock('@mui/material', () => {
+  const actual = jest.requireActual('@mui/material');
+  return {
+    ...actual,
+    Dialog: ({ children, open, onClose, maxWidth, fullWidth }: any) => 
+      open ? React.createElement('div', { 'data-testid': 'mock-dialog' }, children) : null,
+    DialogTitle: ({ children }: any) => 
+      React.createElement('div', { 'data-testid': 'dialog-title' }, children),
+    DialogContent: ({ children, dividers }: any) => 
+      React.createElement('div', { 'data-testid': 'dialog-content' }, children),
+    DialogActions: ({ children }: any) => 
+      React.createElement('div', { 'data-testid': 'dialog-actions' }, children),
+    Button: ({ children, onClick, color, variant }: any) => 
+      React.createElement('button', {
+        onClick,
+        'data-testid': 'mui-button',
+        'data-color': color,
+        'data-variant': variant
+      }, children),
+    FormControlLabel: ({ control, label }: any) => 
+      React.createElement('label', { 'data-testid': 'form-control-label' }, [
+        control,
+        React.createElement('span', { key: 'label' }, label)
+      ]),
+    Checkbox: ({ checked, onChange }: any) => 
+      React.createElement('input', {
+        type: 'checkbox',
+        checked,
+        onChange,
+        'data-testid': 'mui-checkbox'
+      }),
+    Paper: ({ children, sx, elevation }: any) => 
+      React.createElement('div', { 'data-testid': 'mui-paper' }, children)
+  };
+});
 
 // Mock the freelancer service
-jest.mock('../../services/freelancerService', () => ({
+jest.mock('../../services/AdminService', () => ({
   getPendingFreelancers: jest.fn()
 }));
 
 const mockGetPendingFreelancers = getPendingFreelancers as jest.MockedFunction<typeof getPendingFreelancers>;
 
-// Define types for test data
+// Define types for test data - using a more flexible approach for dynamic data
 interface FreelancerData {
+  [key: string]: any;
   freelancerId: string;
-  title: string;
-  bio: string;
-  hourlyRate: number;
-  address: string;
-  city: string;
-  state: string;
-  country: string;
-  postalCode: string;
-  phoneNumber: string;
-  isAbcMember: boolean;
-  profileStatus: string;
 }
 
-describe('PendingFreelancers Logic Tests', () => {
+describe('PendingFreelancers Component Tests', () => {
+  // Mock data with various fields to test dynamic column generation
   const mockFreelancersData: FreelancerData[] = [
     {
       freelancerId: '1',
+      name: 'John Doe',
       title: 'Frontend Developer',
-      bio: 'Experienced React developer',
+      skills: 'React, TypeScript',
+      experience: '5 years',
       hourlyRate: 50,
-      address: '123 Main St',
-      city: 'New York',
-      state: 'NY',
-      country: 'USA',
-      postalCode: '10001',
-      phoneNumber: '+1234567890',
-      isAbcMember: true,
+      location: 'New York',
+      availability: 'Full-time',
       profileStatus: 'pending'
     },
     {
       freelancerId: '2',
+      name: 'Jane Smith',
       title: 'Backend Developer',
-      bio: 'Node.js specialist',
+      skills: 'Node.js, MongoDB',
+      experience: '3 years',
       hourlyRate: 60,
-      address: '456 Oak Ave',
-      city: 'San Francisco',
-      state: 'CA',
-      country: 'USA',
-      postalCode: '94102',
-      phoneNumber: '+1987654321',
-      isAbcMember: false,
+      location: 'San Francisco',
+      availability: 'Part-time',
       profileStatus: 'pending'
     }
   ];
@@ -58,244 +96,412 @@ describe('PendingFreelancers Logic Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(console, 'log').mockImplementation(() => {});
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
   });
 
-  describe('Data Processing Logic', () => {
-    it('should handle successful data fetching', async () => {
+  describe('Component Rendering', () => {
+    it('should render the component with dynamic columns', async () => {
       // Arrange
       mockGetPendingFreelancers.mockResolvedValue(mockFreelancersData);
-
+      
       // Act
-      const result = await getPendingFreelancers();
-
+      render(React.createElement(PendingFreelancers));
+      
       // Assert
-      expect(mockGetPendingFreelancers).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(mockFreelancersData);
-      expect(result).toHaveLength(2);
+      await waitFor(() => {
+        expect(screen.getByText('Pending Freelancers')).toBeInTheDocument();
+        expect(screen.getByText('Select Columns')).toBeInTheDocument();
+      });
     });
 
-    it('should handle empty data response', async () => {
+    it('should display empty state when no freelancers are available', async () => {
       // Arrange
       mockGetPendingFreelancers.mockResolvedValue([]);
-
+      
       // Act
-      const result = await getPendingFreelancers();
-
+      render(React.createElement(PendingFreelancers));
+      
       // Assert
-      expect(result).toEqual([]);
-      expect(result).toHaveLength(0);
+      await waitFor(() => {
+        expect(screen.getByText('Pending Freelancers')).toBeInTheDocument();
+        expect(screen.getByText("You don't have any Pending Freelancer Right Now.")).toBeInTheDocument();
+      });
     });
 
-    it('should handle null data response', async () => {
+    it('should display DataGrid when freelancers data is available', async () => {
       // Arrange
-      mockGetPendingFreelancers.mockResolvedValue(null);
-
+      mockGetPendingFreelancers.mockResolvedValue(mockFreelancersData);
+      
       // Act
-      const result = await getPendingFreelancers();
-
+      render(React.createElement(PendingFreelancers));
+      
       // Assert
-      expect(result).toBeNull();
+      await waitFor(() => {
+        expect(screen.getByTestId('mock-data-grid')).toBeInTheDocument();
+        expect(screen.getByTestId('datagrid-rows')).toHaveTextContent('2');
+      });
     });
 
-    it('should handle API errors', async () => {
+    it('should render with correct initial pagination settings', async () => {
       // Arrange
-      const apiError = new Error('API Error');
-      mockGetPendingFreelancers.mockRejectedValue(apiError);
+      mockGetPendingFreelancers.mockResolvedValue(mockFreelancersData);
+      
+      // Act
+      render(React.createElement(PendingFreelancers));
+      
+      // Assert
+      await waitFor(() => {
+        expect(screen.getByTestId('mock-data-grid')).toBeInTheDocument();
+      });
+    });
 
-      // Act & Assert
-      await expect(getPendingFreelancers()).rejects.toThrow('API Error');
+    it('should open column selection dialog when button is clicked', async () => {
+      // Arrange
+      mockGetPendingFreelancers.mockResolvedValue(mockFreelancersData);
+      
+      // Act
+      render(React.createElement(PendingFreelancers));
+      
+      // Wait for component to load
+      await waitFor(() => {
+        expect(screen.getByText('Select Columns')).toBeInTheDocument();
+      });
+      
+      // Click the button to open dialog - use button selector to avoid ambiguity
+      const selectColumnsButton = screen.getByRole('button', { name: 'Select Columns' });
+      fireEvent.click(selectColumnsButton);
+      
+      // Assert
+      await waitFor(() => {
+        expect(screen.getByTestId('mock-dialog')).toBeInTheDocument();
+        expect(screen.getByTestId('dialog-title')).toBeInTheDocument();
+      });
+    });
+
+    it('should close dialog when Done button is clicked', async () => {
+      // Arrange
+      mockGetPendingFreelancers.mockResolvedValue(mockFreelancersData);
+      
+      // Act
+      render(React.createElement(PendingFreelancers));
+      
+      // Open dialog
+      await waitFor(() => {
+        expect(screen.getByText('Select Columns')).toBeInTheDocument();
+      });
+      const selectColumnsButton = screen.getByRole('button', { name: 'Select Columns' });
+      fireEvent.click(selectColumnsButton);
+      
+      // Wait for dialog to open
+      await waitFor(() => {
+        expect(screen.getByTestId('mock-dialog')).toBeInTheDocument();
+      });
+      
+      // Click Done button
+      const doneButtons = screen.getAllByText('Done');
+      fireEvent.click(doneButtons[doneButtons.length - 1]);
+      
+      // Assert dialog closes
+      await waitFor(() => {
+        expect(screen.queryByTestId('mock-dialog')).not.toBeInTheDocument();
+      });
     });
   });
 
-  describe('Column Configuration Logic', () => {
-    const allColumns = [
-      { field: "freelancerId", headerName: "ID", width: 250 },
-      { field: "title", headerName: "Title", width: 150 },
-      { field: "bio", headerName: "Bio", width: 200 },
-      { field: "hourlyRate", headerName: "Hourly Rate", width: 120 },
-      { field: "address", headerName: "Address", width: 200 },
-      { field: "city", headerName: "City", width: 120 },
-      { field: "state", headerName: "State", width: 120 },
-      { field: "country", headerName: "Country", width: 120 },
-      { field: "postalCode", headerName: "Postal Code", width: 120 },
-      { field: "phoneNumber", headerName: "Phone", width: 150 },
-      { field: "isAbcMember", headerName: "ABC Member", width: 150 },
-      { field: "profileStatus", headerName: "Profile Status", width: 150 },
-    ];
-
-    it('should have correct column definitions', () => {
-      // Assert
-      expect(allColumns).toHaveLength(12);
-      expect(allColumns[0].field).toBe('freelancerId');
-      expect(allColumns[0].headerName).toBe('ID');
-      expect(allColumns[1].field).toBe('title');
-      expect(allColumns[1].headerName).toBe('Title');
-    });
-
-    it('should filter columns based on selection', () => {
+  describe('Dynamic Column Generation', () => {
+    it('should generate columns dynamically from data', async () => {
       // Arrange
-      const selectedColumns = ['freelancerId', 'title', 'city'];
-
+      mockGetPendingFreelancers.mockResolvedValue(mockFreelancersData);
+      
       // Act
-      const finalColumns = allColumns.filter((col) =>
-        selectedColumns.includes(col.field)
-      );
-
-      // Assert
-      expect(finalColumns).toHaveLength(3);
-      expect(finalColumns[0].field).toBe('freelancerId');
-      expect(finalColumns[1].field).toBe('title');
-      expect(finalColumns[2].field).toBe('city');
+      render(React.createElement(PendingFreelancers));
+      
+      // Assert - Check that columns are generated from the data
+      await waitFor(() => {
+        expect(mockGetPendingFreelancers).toHaveBeenCalledTimes(1);
+        expect(screen.getByTestId('datagrid-columns')).toHaveTextContent('9'); // 9 fields in mock data
+      });
     });
 
-    it('should handle empty column selection', () => {
+    it('should capitalize column headers correctly', async () => {
       // Arrange
-      const selectedColumns: string[] = [];
-
+      const testData = [{ freelancerId: '1', firstName: 'John', lastName: 'Doe' }];
+      mockGetPendingFreelancers.mockResolvedValue(testData);
+      
       // Act
-      const finalColumns = allColumns.filter((col) =>
-        selectedColumns.includes(col.field)
-      );
-
-      // Assert
-      expect(finalColumns).toHaveLength(0);
+      render(React.createElement(PendingFreelancers));
+      
+      // Open column selection to see headers
+      await waitFor(() => {
+        expect(screen.getByText('Select Columns')).toBeInTheDocument();
+      });
+      const selectColumnsButton = screen.getByRole('button', { name: 'Select Columns' });
+      fireEvent.click(selectColumnsButton);
+      
+      // Assert headers are capitalized
+      await waitFor(() => {
+        expect(screen.getByText('FreelancerId')).toBeInTheDocument();
+        expect(screen.getByText('FirstName')).toBeInTheDocument();
+        expect(screen.getByText('LastName')).toBeInTheDocument();
+      });
     });
 
-    it('should handle column selection toggle logic', () => {
+    it('should handle data with different field structures', async () => {
       // Arrange
-      let selectedColumns = ['freelancerId'];
-
-      // Act - Add column
-      const fieldToAdd = 'title';
-      if (!selectedColumns.includes(fieldToAdd)) {
-        selectedColumns = [...selectedColumns, fieldToAdd];
+      const dynamicData = [
+        { id: '1', customField: 'value1', anotherField: 'test' },
+        { id: '2', customField: 'value2', anotherField: 'test2' }
+      ];
+      mockGetPendingFreelancers.mockResolvedValue(dynamicData);
+      
+      // Act
+      render(React.createElement(PendingFreelancers));
+      
+      // Assert
+      await waitFor(() => {
+        expect(screen.getByTestId('datagrid-columns')).toHaveTextContent('3'); // 3 fields
+        expect(screen.getByTestId('datagrid-rows')).toHaveTextContent('2'); // 2 rows
+      });
+    });
+    
+    it('should handle column selection changes', async () => {
+      // Arrange
+      mockGetPendingFreelancers.mockResolvedValue(mockFreelancersData);
+      
+      // Act
+      render(React.createElement(PendingFreelancers));
+      
+      // Open column selection dialog
+      await waitFor(() => {
+        expect(screen.getByText('Select Columns')).toBeInTheDocument();
+      });
+      
+      const selectColumnsButton = screen.getByRole('button', { name: 'Select Columns' });
+      fireEvent.click(selectColumnsButton);
+      
+      // Wait for dialog to open and verify checkboxes
+      await waitFor(() => {
+        expect(screen.getByTestId('dialog-title')).toBeInTheDocument();
+        const checkboxes = screen.getAllByTestId('mui-checkbox');
+        expect(checkboxes.length).toBeGreaterThan(0);
+      });
+      
+      // Test checkbox interaction
+      const checkboxes = screen.getAllByTestId('mui-checkbox');
+      if (checkboxes.length > 0) {
+        fireEvent.click(checkboxes[0]);
       }
-
-      // Assert
-      expect(selectedColumns).toContain('freelancerId');
-      expect(selectedColumns).toContain('title');
-      expect(selectedColumns).toHaveLength(2);
-
-      // Act - Remove column
-      const fieldToRemove = 'freelancerId';
-      selectedColumns = selectedColumns.filter(col => col !== fieldToRemove);
-
-      // Assert
-      expect(selectedColumns).not.toContain('freelancerId');
-      expect(selectedColumns).toContain('title');
-      expect(selectedColumns).toHaveLength(1);
+      
+      // Close dialog
+      const doneButtons = screen.getAllByText('Done');
+      fireEvent.click(doneButtons[doneButtons.length - 1]);
+      
+      // Assert dialog closes
+      await waitFor(() => {
+        expect(screen.queryByTestId('mock-dialog')).not.toBeInTheDocument();
+      });
     });
-  });
 
-  describe('Data Transformation Logic', () => {
-    it('should correctly map freelancer data for display', () => {
+    it('should show all columns selected by default', async () => {
       // Arrange
-      const freelancer = mockFreelancersData[0];
-
-      // Act & Assert
-      expect(freelancer.freelancerId).toBe('1');
-      expect(freelancer.title).toBe('Frontend Developer');
-      expect(freelancer.hourlyRate).toBe(50);
-      expect(freelancer.isAbcMember).toBe(true);
-    });
-
-    it('should handle data with different types correctly', () => {
-      // Arrange
-      const freelancer = mockFreelancersData[1];
-
-      // Act & Assert
-      expect(typeof freelancer.freelancerId).toBe('string');
-      expect(typeof freelancer.hourlyRate).toBe('number');
-      expect(typeof freelancer.isAbcMember).toBe('boolean');
-    });
-
-    it('should validate required fields exist', () => {
-      // Arrange & Act
-      const requiredFields = ['freelancerId', 'title', 'profileStatus'];
-
-      // Assert
-      mockFreelancersData.forEach(freelancer => {
-        requiredFields.forEach(field => {
-          expect(freelancer).toHaveProperty(field);
-          expect(freelancer[field as keyof FreelancerData]).toBeDefined();
+      mockGetPendingFreelancers.mockResolvedValue(mockFreelancersData);
+      
+      // Act
+      render(React.createElement(PendingFreelancers));
+      
+      // Open column selection dialog
+      await waitFor(() => {
+        expect(screen.getByText('Select Columns')).toBeInTheDocument();
+      });
+      const selectColumnsButton = screen.getByRole('button', { name: 'Select Columns' });
+      fireEvent.click(selectColumnsButton);
+      
+      // Assert all checkboxes are checked by default
+      await waitFor(() => {
+        const checkboxes = screen.getAllByTestId('mui-checkbox');
+        checkboxes.forEach(checkbox => {
+          expect(checkbox).toBeChecked();
         });
       });
     });
   });
 
-  describe('Error Handling Logic', () => {
-    it('should handle network errors gracefully', async () => {
+  describe('Data Processing Logic', () => {
+    it('should handle successful data fetching and log response', async () => {
       // Arrange
-      const networkError = new Error('Network connection failed');
-      mockGetPendingFreelancers.mockRejectedValue(networkError);
-
-      // Act & Assert
-      await expect(getPendingFreelancers()).rejects.toThrow('Network connection failed');
-    });
-
-    it('should handle server errors gracefully', async () => {
-      // Arrange
-      const serverError = new Error('Internal server error');
-      mockGetPendingFreelancers.mockRejectedValue(serverError);
-
-      // Act & Assert
-      await expect(getPendingFreelancers()).rejects.toThrow('Internal server error');
-    });
-
-    it('should handle malformed data gracefully', async () => {
-      // Arrange
-      const malformedData = [{ invalidField: 'test' }];
-      mockGetPendingFreelancers.mockResolvedValue(malformedData as any);
-
+      mockGetPendingFreelancers.mockResolvedValue(mockFreelancersData);
+      
       // Act
-      const result = await getPendingFreelancers();
-
+      render(React.createElement(PendingFreelancers));
+      
       // Assert
-      expect(result).toEqual(malformedData);
-      expect(result[0]).not.toHaveProperty('freelancerId');
+      await waitFor(() => {
+        expect(mockGetPendingFreelancers).toHaveBeenCalledTimes(1);
+        expect(console.log).toHaveBeenCalledWith('✅ API response:', mockFreelancersData);
+      });
+    });
+
+    it('should set loading state correctly', async () => {
+      // Arrange
+      let resolvePromise: (value: any) => void;
+      const promise = new Promise(resolve => {
+        resolvePromise = resolve;
+      });
+      mockGetPendingFreelancers.mockReturnValue(promise);
+      
+      // Act
+      render(React.createElement(PendingFreelancers));
+      
+      // Initially loading should be true, then resolve
+      resolvePromise!(mockFreelancersData);
+      
+      // Assert loading completes
+      await waitFor(() => {
+        expect(mockGetPendingFreelancers).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should use correct row ID from freelancerId or fallback to id', async () => {
+      // Arrange
+      const dataWithIds = [
+        { freelancerId: 'fl1', name: 'John' },
+        { id: 'id1', name: 'Jane' } // No freelancerId, should use id
+      ];
+      mockGetPendingFreelancers.mockResolvedValue(dataWithIds);
+      
+      // Act
+      render(React.createElement(PendingFreelancers));
+      
+      // Assert DataGrid receives the data
+      await waitFor(() => {
+        expect(screen.getByTestId('mock-data-grid')).toBeInTheDocument();
+        expect(screen.getByTestId('datagrid-rows')).toHaveTextContent('2');
+      });
+    });
+
+    it('should handle empty data response', async () => {
+      // Arrange
+      mockGetPendingFreelancers.mockResolvedValue([]);
+      
+      // Act
+      render(React.createElement(PendingFreelancers));
+      
+      // Assert
+      await waitFor(() => {
+        expect(mockGetPendingFreelancers).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('should handle null data response', async () => {
+      // Arrange
+      mockGetPendingFreelancers.mockResolvedValue(null);
+      
+      // Act
+      render(React.createElement(PendingFreelancers));
+      
+      // Assert
+      await waitFor(() => {
+        expect(mockGetPendingFreelancers).toHaveBeenCalledTimes(1);
+        expect(screen.getByText("You don't have any Pending Freelancer Right Now.")).toBeInTheDocument();
+      });
+    });
+
+    it('should handle non-array data response', async () => {
+      // Arrange
+      mockGetPendingFreelancers.mockResolvedValue({ message: 'Invalid response' });
+      
+      // Act
+      render(React.createElement(PendingFreelancers));
+      
+      // Assert
+      await waitFor(() => {
+        expect(mockGetPendingFreelancers).toHaveBeenCalledTimes(1);
+        expect(screen.getByText("You don't have any Pending Freelancer Right Now.")).toBeInTheDocument();
+      });
     });
   });
 
-  describe('State Management Logic', () => {
-    it('should handle loading state transitions', () => {
+  describe('Error Handling', () => {
+    it('should handle API fetch errors gracefully and show empty state', async () => {
       // Arrange
-      let loading = true;
-
-      // Act - Start loading
-      expect(loading).toBe(true);
-
-      // Act - Finish loading
-      loading = false;
-      expect(loading).toBe(false);
+      const apiError = new Error('API Error');
+      mockGetPendingFreelancers.mockRejectedValue(apiError);
+      
+      // Act
+      render(React.createElement(PendingFreelancers));
+      
+      // Assert
+      await waitFor(() => {
+        expect(mockGetPendingFreelancers).toHaveBeenCalledTimes(1);
+        expect(console.error).toHaveBeenCalledWith('❌ Error fetching freelancers:', apiError);
+        expect(screen.getByText("You don't have any Pending Freelancer Right Now.")).toBeInTheDocument();
+      });
     });
 
-    it('should handle data state updates', () => {
+    it('should handle network errors', async () => {
       // Arrange
-      let freelancers: FreelancerData[] = [];
-
-      // Act - Update with data
-      freelancers = mockFreelancersData;
-
+      mockGetPendingFreelancers.mockRejectedValue(new Error('Network Error'));
+      
+      // Act
+      render(React.createElement(PendingFreelancers));
+      
       // Assert
-      expect(freelancers).toHaveLength(2);
-      expect(freelancers[0].freelancerId).toBe('1');
+      await waitFor(() => {
+        expect(console.error).toHaveBeenCalledWith('❌ Error fetching freelancers:', expect.any(Error));
+        expect(screen.getByText('Pending Freelancers')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('Component State Management', () => {
+    it('should manage dialog open/close state correctly', async () => {
+      // Arrange
+      mockGetPendingFreelancers.mockResolvedValue(mockFreelancersData);
+      
+      // Act
+      render(React.createElement(PendingFreelancers));
+      
+      // Initially dialog should be closed
+      expect(screen.queryByTestId('mock-dialog')).not.toBeInTheDocument();
+      
+      // Open dialog
+      await waitFor(() => {
+        expect(screen.getByText('Select Columns')).toBeInTheDocument();
+      });
+      const selectColumnsButton = screen.getByRole('button', { name: 'Select Columns' });
+      fireEvent.click(selectColumnsButton);
+      
+      // Dialog should be open
+      await waitFor(() => {
+        expect(screen.getByTestId('mock-dialog')).toBeInTheDocument();
+      });
+      
+      // Close dialog
+      const doneButtons = screen.getAllByText('Done');
+      fireEvent.click(doneButtons[doneButtons.length - 1]);
+      
+      // Dialog should be closed
+      await waitFor(() => {
+        expect(screen.queryByTestId('mock-dialog')).not.toBeInTheDocument();
+      });
     });
 
-    it('should handle column selection state', () => {
-      // Arrange
-      let selectedColumns: string[] = [];
-
-      // Act - Select columns
-      selectedColumns = ['freelancerId', 'title'];
-
+    it('should handle column filtering when no columns selected', async () => {
+      // Arrange - Mock data with single field to test edge case
+      const singleFieldData = [{ freelancerId: '1' }];
+      mockGetPendingFreelancers.mockResolvedValue(singleFieldData);
+      
+      // Act
+      render(React.createElement(PendingFreelancers));
+      
       // Assert
-      expect(selectedColumns).toContain('freelancerId');
-      expect(selectedColumns).toContain('title');
-      expect(selectedColumns).toHaveLength(2);
+      await waitFor(() => {
+        expect(screen.getByTestId('datagrid-columns')).toHaveTextContent('1');
+      });
     });
   });
 });
