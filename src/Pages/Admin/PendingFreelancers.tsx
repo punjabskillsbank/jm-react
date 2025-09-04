@@ -25,7 +25,7 @@ export default function PendingFreelancers() {
     const fetchData = async () => {
       try {
         const data = await getPendingFreelancers();
-        console.log("✅ API response:", data);
+       
 
         if (Array.isArray(data) && data.length > 0) {
           setFreelancers(data);
