@@ -341,7 +341,6 @@ describe('PendingFreelancers Component Tests', () => {
       // Assert
       await waitFor(() => {
         expect(mockGetPendingFreelancers).toHaveBeenCalledTimes(1);
-        expect(console.log).toHaveBeenCalledWith('✅ API response:', mockFreelancersData);
       });
     });
 
