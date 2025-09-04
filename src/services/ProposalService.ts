@@ -1,5 +1,6 @@
 import axios from 'axios';
 import config from '../config/indexConfig';
+import { uploadFilesToS3 } from '../utils/uploadUtils';
 
 const API = axios.create({
   baseURL: config.baseURLs.jobProposal,
@@ -34,45 +35,16 @@ export const submitProposal = async (payload: ProposalPayload) => {
   }
 };
 
-// Upload attachments to S3
-export const S3_UPLOAD_RETRIES_NUM = 3;
-export const uploadFilesToS3 = async (files: File[], proposal_id: number): Promise<{uploadedKeys: string[], failedFiles: string[]}> => {
-  const uploadedKeys: string[] = [];
-  const failedFiles: string[] = [];
 
-  const originalFileNames = files.map(file => file.name);
-
-  // Send POST to get presigned URLs
+export const uploadProposalAttachments = async (files: File[], proposal_id: number) => {
+  // Get presigned URLs from the server
   const presignRes = await API.post(
-    `/api/presigned_url/upload/proposal_attachment`,
-    { proposal_id, file: originalFileNames}
+    '/api/v1/proposals/upload/proposal_attachment',
+    { proposal_id, file: files.map(f => f.name) }
   );
 
-  const urls = presignRes.data as { uploadUrl: string; s3Key: string }[];
-
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    const { uploadUrl, s3Key } = urls[i];
-
-    let success = false;
-    for (let attempt = 1; attempt <= S3_UPLOAD_RETRIES_NUM; attempt++) {
-      try {
-        await axios.put(uploadUrl, file, {
-          headers: { 'Content-Type': file.type },
-        });
-        uploadedKeys.push(s3Key);
-        success = true;
-        break;
-      } catch (err) {
-        console.warn(`Upload attempt ${attempt} failed for ${file.name}`);
-        if (attempt === S3_UPLOAD_RETRIES_NUM) {
-          failedFiles.push(file.name);
-        }
-      }
-    }
-  }
-
-  return {uploadedKeys,failedFiles};
+  // Use the utility function to handle the actual S3 upload
+  return uploadFilesToS3(files, presignRes.data);
 };
 
 // Save uploaded S3 keys to backend

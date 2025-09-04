@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchJobById } from '../../services/JobServices';
-import { submitProposal, uploadFilesToS3, saveAttachmentUrls, S3_UPLOAD_RETRIES_NUM } from '../../services/ProposalService';
+import { submitProposal, uploadProposalAttachments, saveAttachmentUrls, S3_UPLOAD_RETRIES_NUM } from '../../services/ProposalService';
 import { JobPosting } from '../../types/JobPosting';
 import { toast } from 'react-toastify';
 
@@ -83,7 +83,7 @@ const SubmitProposalPage = () => {
       // If there are attachments, upload them to S3
       if (attachments.length > 0) {
         try {
-          const { uploadedKeys, failedFiles } = await uploadFilesToS3(attachments, proposal.proposalId);
+          const { uploadedKeys, failedFiles } = await uploadProposalAttachments(attachments, proposal.proposalId);
           
           // Save the successfully uploaded file URLs
           if (uploadedKeys.length > 0) {
