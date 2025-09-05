@@ -61,8 +61,8 @@ export const uploadJobAttachments = async (files: File[], job_posting_id: number
 
 // Update job posting status
 export const setJobPostingToDraft = async (job_posting_id: number) => {
-  return API.post(`/api/v1/job_postings/${job_posting_id}/status`, {
-    status: 'DRAFT',
+  return API.patch(`/api/v1/job_postings/${job_posting_id}`, {
+    jobPostingStatus: 'DRAFT',
   });
 };
 
