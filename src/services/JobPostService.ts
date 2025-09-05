@@ -1,5 +1,6 @@
 import axios from 'axios';
 import config from '../config/indexConfig';
+import { uploadFilesToS3 } from '../utils/uploadUtils';
 
 const API = axios.create({
 baseURL: config.baseURLs.jobPosting,
@@ -46,45 +47,16 @@ throw new Error(error?.response?.data?.message || 'Failed to create job posting'
 }
 };
 
-// Upload attachments to S3
-const S3_UPLOAD_RETRIES_NUM = 3;
-export const uploadFilesToS3 = async (files: File[], job_posting_id: number): Promise<string[]> => {
-  const uploadedKeys: string[] = [];
-  const failedFiles: string[] = [];
-
-  const originalFileNames = files.map(file => file.name);
-
-  // Send POST to get presigned URLs
-  const presignRes = await API.post(
-    `/api/presigned_url/upload/job_attachment`,
-    { job_posting_id, file: originalFileNames}
-  );
-
-  const urls = presignRes.data as { uploadUrl: string; s3Key: string }[];
-
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
-    const { uploadUrl, s3Key } = urls[i];
-
-    let success = false;
-    for (let attempt = 1; attempt <= S3_UPLOAD_RETRIES_NUM; attempt++) {
-      try {
-        await axios.put(uploadUrl, file, {
-          headers: { 'Content-Type': file.type },
-        });
-        uploadedKeys.push(s3Key);
-        success = true;
-        break;
-      } catch (err) {
-        console.warn(`Upload attempt ${attempt} failed for ${file.name}`);
-        if (attempt === S3_UPLOAD_RETRIES_NUM) {
-          failedFiles.push(file.name);
-        }
-      }
-    }
-  }
-
-  return {uploadedKeys,failedFiles};
+export const uploadJobAttachments = async (files: File[], job_posting_id: number) => {
+    const originalFileNames = files.map(file => file.name);
+    // Get presigned URLs from backend
+    const presignRes = await API.post(
+      `/api/presigned_url/upload/job_attachment`,
+      { job_posting_id, fileNames: originalFileNames}
+    );
+    const presignedUrls = files.map(file => presignRes.data[file.name]);
+    // Use the common utility to handle S3 PUT uploads
+    return uploadFilesToS3(files, presignedUrls);
 };
 
 // Update job posting status

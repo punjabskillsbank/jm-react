@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
-import { fetchCategories, createJobPosting, JobPostingPayload, uploadFilesToS3, saveAttachmentUrls,} from '../../services/JobPostService';
+import { fetchCategories, createJobPosting, JobPostingPayload, uploadJobAttachments, saveAttachmentUrls, setJobPostingToDraft,} from '../../services/JobPostService';
+import {  S3_UPLOAD_RETRIES_NUM, } from '../../utils/uploadUtils';
 
 const JobPost: React.FC = () => {
   const [title, setTitle] = useState('');
@@ -89,7 +90,7 @@ const JobPost: React.FC = () => {
       const jobId = response.jobPostingId;
 
        if (attachments.length > 0) {
-          const { uploadedKeys, failedFiles } = await uploadFilesToS3(attachments, jobId);
+          const { uploadedKeys, failedFiles } = await uploadJobAttachments(attachments, jobId);
 
           // Save successfully uploaded files
           if (uploadedKeys.length > 0) {
@@ -219,12 +220,33 @@ const JobPost: React.FC = () => {
             onChange={(e) => {
               const newFiles = Array.from(e.target.files || []);
 
-              const combinedFiles = [...attachments, ...newFiles];
+            //Check for duplicates
+            const existingNames = new Set(attachments.map(f => f.name));
+            const uniqueNewFiles = newFiles.filter(file => {
+              if (existingNames.has(file.name)) {
+                toast.error(`File "${file.name}" is already added.`);
+                return false;
+              }
+              return true;
+            });
 
+            //Check for size (100 MB max per file)
+            const MAX_FILE_SIZE_MB = 100;
+            const sizeFilteredFiles = uniqueNewFiles.filter(file => {
+              if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+                toast.error(`File "${file.name}" exceeds ${MAX_FILE_SIZE_MB} MB limit.`);
+                return false;
+              }
+              return true;
+            });
+
+            //Check total count (max 10 files)
+              const combinedFiles = [...attachments, ...newFiles];
               if (combinedFiles.length > 10) {
                 toast.error('You can upload up to 10 files in total.');
                 return;
               }
+
               setAttachments(combinedFiles);
             }}
             className="w-full p-2 border rounded"

@@ -1,7 +1,7 @@
 
 const common = {
   ports: {
-    jobPosting: 8080,
+    jobPosting: 8081,
     users: 8081,
   },
   featureFlags: {
