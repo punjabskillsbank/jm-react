@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchJobById } from '../../services/JobServices';
-import { submitProposal, uploadProposalAttachments, saveAttachmentUrls, S3_UPLOAD_RETRIES_NUM } from '../../services/ProposalService';
+import { submitProposal, uploadProposalAttachments, saveAttachmentS3Keys } from '../../services/ProposalService';
 import { JobPosting } from '../../types/JobPosting';
 import { toast } from 'react-toastify';
 
@@ -70,24 +70,15 @@ const SubmitProposalPage = () => {
       if (!response) {
         throw new Error('No response received from server');
       }
-      
-      // The server returns the proposal data directly, so we can use the response as is
-      // and we don't need to extract a separate proposalId
-      const proposal = response;
-      
-      if (!proposal) {
-        console.error('Invalid response format. Expected proposal data in:', response);
-        throw new Error('Invalid response format from server');
-      }
 
       // If there are attachments, upload them to S3
       if (attachments.length > 0) {
         try {
-          const { uploadedKeys, failedFiles } = await uploadProposalAttachments(attachments, proposal.proposalId);
+          const { uploadedKeys, failedFiles } = await uploadProposalAttachments(attachments, response.proposalId);
           
           // Save the successfully uploaded file URLs
           if (uploadedKeys.length > 0) {
-            await saveAttachmentUrls(proposal.proposalId, uploadedKeys);
+            await saveAttachmentS3Keys(response.proposalId, uploadedKeys);
           }
 
           if (failedFiles.length > 0) {

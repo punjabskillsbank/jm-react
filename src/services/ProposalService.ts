@@ -48,7 +48,7 @@ export const uploadProposalAttachments = async (files: File[], proposal_id: numb
 };
 
 // Save uploaded S3 keys to backend
-export const saveAttachmentUrls = async (proposal_id: number, urls: string[]) => {
+export const saveAttachmentS3Keys = async (proposal_id: number, urls: string[]) => {
   return API.post(`/api/v1/proposals/${proposal_id}/attachments`, {
     attachmentUrls: urls,
   });
