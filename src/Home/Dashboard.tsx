@@ -2,7 +2,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserCircle } from "@fortawesome/free-solid-svg-icons";
 import ProfileDetailsModal from "./ProfileDetailsModal";
-import { useSignup } from "../pages/Freelancer/Signup/SignupContext"; // adjust path if needed
+import { useSignup } from "../Pages/Freelancer/Signup/SignupContext"; // adjust path
 
 export default function Header() {
   const [showDropdown, setShowDropdown] = useState(false);

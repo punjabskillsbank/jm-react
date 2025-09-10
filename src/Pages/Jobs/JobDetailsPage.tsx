@@ -51,7 +51,9 @@ const JobDetailsPage = () => {
           <h3 className="font-semibold mb-1">Skills Required:</h3>
           <ul className="list-disc list-inside text-sm text-gray-800">
             {job.skills.map((skill, idx) => (
-              <li key={idx}>{skill}</li>
+              <li key={idx}>
+                {typeof skill === 'string' ? skill : (skill as any).skill || 'Unknown Skill'}
+              </li>
             ))}
           </ul>
         </div>
