@@ -3,8 +3,8 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import axios from "axios";
 import { BrowserRouter } from "react-router-dom";
-import ProfileReview from "../../../pages/Freelancer/Profile/ProfileReview";
-import { SignupProvider } from "../../../pages/Freelancer/Signup/SignupContext";
+import ProfileReview from "../../../Pages/Freelancer/Profile/ProfileReview";
+import { SignupProvider } from "../../../Pages/Freelancer/Signup/SignupContext";
 import config from "../../../config/indexConfig";
 
 jest.mock("axios");
