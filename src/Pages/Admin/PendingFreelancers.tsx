@@ -18,7 +18,7 @@ export default function PendingFreelancers() {
   const [selectedColumns, setSelectedColumns] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔹 For popup state
+  //  For popup state
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function PendingFreelancers() {
           setSelectedColumns(dynamicCols.map((col) => col.field));
         }
       } catch (error) {
-        console.error("❌ Error fetching freelancers:", error);
+        console.error(" Error fetching freelancers:", error);
         setFreelancers([]);
       } finally {
         setLoading(false);

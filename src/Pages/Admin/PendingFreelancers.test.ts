@@ -436,7 +436,7 @@ describe('PendingFreelancers Component Tests', () => {
       // Assert
       await waitFor(() => {
         expect(mockGetPendingFreelancers).toHaveBeenCalledTimes(1);
-        expect(console.error).toHaveBeenCalledWith('❌ Error fetching freelancers:', apiError);
+        expect(console.error).toHaveBeenCalledWith(' Error fetching freelancers:', apiError);
         expect(screen.getByText("You don't have any Pending Freelancer Right Now.")).toBeInTheDocument();
       });
     });
@@ -450,7 +450,7 @@ describe('PendingFreelancers Component Tests', () => {
       
       // Assert
       await waitFor(() => {
-        expect(console.error).toHaveBeenCalledWith('❌ Error fetching freelancers:', expect.any(Error));
+        expect(console.error).toHaveBeenCalledWith(' Error fetching freelancers:', expect.any(Error));
         expect(screen.getByText('Pending Freelancers')).toBeInTheDocument();
       });
     });

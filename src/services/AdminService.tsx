@@ -14,7 +14,7 @@ export const getPendingFreelancers = async () => {
 
     return await response.json();
   } catch (error) {
-    console.error("❌ Error in getPendingFreelancers:", error);
+    console.error(" Error in getPendingFreelancers:", error);
     throw error;
   }
 };
