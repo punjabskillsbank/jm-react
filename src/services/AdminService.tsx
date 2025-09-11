@@ -3,7 +3,7 @@ import local from "../config/localConfig";
 
 export const getPendingFreelancers = async () => {
   const url = `${local.baseURLs.adminManagement}${common.endpoints.pendingFreelancers}`;
-  console.log("🔗 Fetching:", url); // Debug log
+  console.log(" Fetching:", url); // Debug log
 
   try {
     const response = await fetch(url);
