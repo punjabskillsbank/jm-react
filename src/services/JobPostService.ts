@@ -51,9 +51,7 @@ export const uploadJobAttachments = async (files: File[], job_posting_id: number
     const originalFileNames = files.map(file => file.name);
     // Get presigned URLs from backend
     const presignRes = await API.post(
-      `/api/presigned_url/upload/job_attachment`,
-      { job_posting_id, fileNames: originalFileNames}
-    );
+      `/api/v1/job_postings/${job_posting_id}/presigned_urls`, originalFileNames);
     const presignedUrls = files.map(file => presignRes.data[file.name]);
     // Use the common utility to handle S3 PUT uploads
     return uploadFilesToS3(files, presignedUrls);
@@ -67,8 +65,6 @@ export const setJobPostingToDraft = async (job_posting_id: number) => {
 };
 
 // Save uploaded S3 keys to backend
-export const saveAttachmentUrls = async (job_posting_id: number, urls: string[]) => {
-  return API.post(`/api/v1/job_postings/${job_posting_id}/attachments`, {
-    attachmentUrls: urls,
-  });
+export const saveAttachmentsS3Keys = async (job_posting_id: number, urls: string[]) => {
+  return API.post(`/api/v1/job_postings/${job_posting_id}/attachments`,urls);
 };

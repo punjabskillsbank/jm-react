@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
-import { fetchCategories, createJobPosting, JobPostingPayload, uploadJobAttachments, saveAttachmentUrls, setJobPostingToDraft,} from '../../services/JobPostService';
+import { fetchCategories, createJobPosting, JobPostingPayload, uploadJobAttachments, saveAttachmentsS3Keys, setJobPostingToDraft,} from '../../services/JobPostService';
 import {  S3_UPLOAD_RETRIES_NUM, } from '../../utils/uploadUtils';
 
 const JobPost: React.FC = () => {
@@ -92,9 +92,9 @@ const JobPost: React.FC = () => {
        if (attachments.length > 0) {
           const { uploadedKeys, failedFiles } = await uploadJobAttachments(attachments, jobId);
 
-          // Save successfully uploaded files
+          // Save S3 keys of successfully uploaded files
           if (uploadedKeys.length > 0) {
-            await saveAttachmentUrls(jobId, uploadedKeys);
+            await saveAttachmentsS3Keys(jobId, uploadedKeys);
           }
 
           // If any failed after retries, mark as draft
