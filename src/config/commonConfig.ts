@@ -11,6 +11,7 @@ const common = {
   endpoints: {
     presignedUpload: '/api/presigned_url/upload',
     createFreelancerProfile: '/api/freelancer/create_profile',
+    pendingFreelancers: "/api/admin_management/pending_freelancers",
     // ...other endpoints...
   },
 };
