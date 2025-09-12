@@ -1,5 +1,6 @@
 import axios from 'axios';
 import config from '../config/indexConfig';
+import { uploadFilesToS3 } from '../utils/uploadUtils';
 
 const API = axios.create({
 baseURL: config.baseURLs.jobPosting,
@@ -44,4 +45,26 @@ return response.data;
 console.error('Error creating job posting:', error);
 throw new Error(error?.response?.data?.message || 'Failed to create job posting');
 }
+};
+
+export const uploadJobAttachments = async (files: File[], job_posting_id: number) => {
+    const originalFileNames = files.map(file => file.name);
+    // Get presigned URLs from backend
+    const presignRes = await API.post(
+      `/api/v1/job_postings/${job_posting_id}/presigned_urls`, originalFileNames);
+    const presignedUrls = files.map(file => presignRes.data[file.name]);
+    // Use the common utility to handle S3 PUT uploads
+    return uploadFilesToS3(files, presignedUrls);
+};
+
+// Update job posting status
+export const setJobPostingToDraft = async (job_posting_id: number) => {
+  return API.patch(`/api/v1/job_postings/${job_posting_id}`, {
+    jobPostingStatus: 'DRAFT',
+  });
+};
+
+// Save uploaded S3 keys to backend
+export const saveAttachmentsS3Keys = async (job_posting_id: number, urls: string[]) => {
+  return API.post(`/api/v1/job_postings/${job_posting_id}/attachments`,urls);
 };

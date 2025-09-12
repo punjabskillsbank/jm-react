@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { toast } from 'react-toastify';
-import { fetchCategories, createJobPosting, JobPostingPayload } from '../../services/JobPostService';
+import { fetchCategories, createJobPosting, JobPostingPayload, uploadJobAttachments, saveAttachmentsS3Keys, setJobPostingToDraft,} from '../../services/JobPostService';
+import {  S3_UPLOAD_RETRIES_NUM, } from '../../utils/uploadUtils';
 
 const JobPost: React.FC = () => {
   const [title, setTitle] = useState('');
@@ -17,6 +18,7 @@ const JobPost: React.FC = () => {
   const [skills, setSkills] = useState<string[]>([]);
   const [newSkill, setNewSkill] = useState('');
   const [questions, setQuestions] = useState<string[]>([]);
+   const [attachments, setAttachments] = useState<File[]>([]);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -84,7 +86,26 @@ const JobPost: React.FC = () => {
     };
 
     try {
-      await createJobPosting(payload);
+      const response = await createJobPosting(payload);
+      const jobId = response.jobPostingId;
+
+       if (attachments.length > 0) {
+          const { uploadedKeys, failedFiles } = await uploadJobAttachments(attachments, jobId);
+
+          // Save S3 keys of successfully uploaded files
+          if (uploadedKeys.length > 0) {
+            await saveAttachmentsS3Keys(jobId, uploadedKeys);
+          }
+
+          // If any failed after retries, mark as draft
+          if (failedFiles.length > 0) {
+            await setJobPostingToDraft(jobId);
+            toast.error(
+              `Some files failed to upload after ${S3_UPLOAD_RETRIES_NUM} attempts: ${failedFiles.join(', ')}. Job moved to Draft.`
+            );
+            return;
+          }
+        }
       toast.success(`Job ${status === 'DRAFT' ? 'drafted' : 'posted'} successfully!`);
     } catch (err: any) {
       toast.error(`Submission failed: ${err.message}`);
@@ -189,6 +210,62 @@ const JobPost: React.FC = () => {
           ))}
         </ul>
       </div>
+
+    {/* Job Posting Attachement*/}
+    <label className="block text-sm font-medium mb-1">Attachments (Max 10 files)</label>
+          <input
+            type="file"
+            multiple
+            accept="*"
+            onChange={(e) => {
+              const newFiles = Array.from(e.target.files || []);
+
+            //Check for duplicates
+            const existingNames = new Set(attachments.map(f => f.name));
+            const uniqueNewFiles = newFiles.filter(file => {
+              if (existingNames.has(file.name)) {
+                toast.error(`File "${file.name}" is already added.`);
+                return false;
+              }
+              return true;
+            });
+
+            //Check for size (100 MB max per file)
+            const MAX_FILE_SIZE_MB = 100;
+            const sizeFilteredFiles = uniqueNewFiles.filter(file => {
+              if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+                toast.error(`File "${file.name}" exceeds ${MAX_FILE_SIZE_MB} MB limit.`);
+                return false;
+              }
+              return true;
+            });
+
+            //Check total count (max 10 files)
+              const combinedFiles = [...attachments, ...newFiles];
+              if (combinedFiles.length > 10) {
+                toast.error('You can upload up to 10 files in total.');
+                return;
+              }
+
+              setAttachments(combinedFiles);
+            }}
+            className="w-full p-2 border rounded"
+          />
+          <ul className="text-sm mt-2">
+            {attachments.map((file, idx) => (
+              <li key={idx} className="flex justify-between items-center">
+                {file.name}
+                <button
+                  className="ml-2 text-red-500 text-xs"
+                  onClick={() => {
+                    setAttachments(prev => prev.filter((_, i) => i !== idx));
+                  }}
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
 
       {/* Screening Questions */}
       <div className="mb-4">
